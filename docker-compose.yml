@@ -1,0 +1,13 @@
+version : '3'
+
+services:
+    webserver:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        container_name: 'server'
+        ports:
+            - 80:80
+            - 443:443
+        volumes :
+            - ${PWD}:/app
