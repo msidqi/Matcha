@@ -1,0 +1,17 @@
+{
+  "name": "nodeapp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "dependencies": {
+    "express": "^4.17.1",
+    "neo4j-driver": "^1.7.6",
+    "nodemon": "^1.19.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "start": "nodemon -L app.js"
+  },
+  "author": "",
+  "license": "ISC"
+}
