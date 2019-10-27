@@ -10,8 +10,22 @@ services:
             - 80:80
             - 443:443
             - 3000:3000
-        command: nodemon nodeapp/app.js
+
+        # command: nodemon nodeapp/app.js
         volumes :
             - ${PWD}:/app
         restart : on-failure
+        links:
+            - "database:database"
         tty: true
+    database:
+        container_name: 'db'
+        image: "neo4j"
+        volumes:
+            - ${PWD}/neo4j/data:/data
+        ports:
+            - 7687:7687
+            - 7474:7474
+        environment:
+            - NEO4J_AUTH=none
+
