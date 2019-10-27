@@ -4,12 +4,12 @@ const port = (process.env.PORT || 3000);
 const express = require('express');
 const app = express();
 
+/*
 const db_user = 'neo4j';
 const db_passwd = 'neo4j';
 const neo4j = require('neo4j-driver').v1
 const driver = neo4j.driver('bolt://localhost', neo4j.auth.basic(db_user, db_passwd));
 const session = driver.session();
-
 session
   .run('MERGE (alice:Person {name : {nameParam} }) RETURN alice.name AS name', {
     nameParam: 'Alice'
@@ -42,7 +42,7 @@ session
     console.log(error)
   })
 
-
+*/
 
   
 
