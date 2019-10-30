@@ -11,56 +11,65 @@ const neo4j = require('neo4j-driver').v1
 const driver = neo4j.driver('bolt://database', neo4j.auth.basic(db_user, db_passwd));
 const session = driver.session();
 
-// Run a Cypher statement, reading the result in a streaming manner as records arrive:
-// session.run('MERGE (alice:Person {name : {nameParam} }) RETURN alice.name AS name', { nameParam: 'Alice' })
-//   .subscribe({
-//     onNext: function(record) {
-//       console.log(record.get('name'))
-//     },
-//     onCompleted: function() {
-//       session.close()
-//     },
-//     onError: function(error) {
-//       console.log(error)
-//     }
+// the Promise way, where the complete result is collected before we act on it:
+// session.run('MATCH (n:Person) RETURN n LIMIT 25')
+//   .then(function(result) {
+//     result.records.forEach(function(record) {
+//       console.log(record.get('n'))
+//     })
+//     session.close()
+//   })
+//   .catch(function(error) {
+//     console.log(error)
 //   })
 
-// or
-// the Promise way, where the complete result is collected before we act on it:
-session
-  .run('MATCH (n:Person) RETURN n LIMIT 25')
-  .then(function(result) {
-    result.records.forEach(function(record) {
-      console.log(record.get('n'))
-    })
-    session.close()
-  })
-  .catch(function(error) {
-    console.log(error)
-  })
 
-
-
+app.use('/public', express.static('public')); // serving static files
   
 
 app.get('/', (req, res) => {
-  console.log('here');
   res.type('text/plain');
   res.status(200);
   res.send('Hello World!!!!!!!!!!!!!!');
 });
 
-app.get('/other', (req, res) => {
-  res.type('text/plain');
-  res.status(200);
-  res.send('Request to /other SUCCESSSSSRS');
+app.get('/api/users', (req, res) => {
+
+  
+  session.run('MATCH (n:Person) RETURN n')
+  .then(function(result) {
+    res.type('json');
+    res.status(200);
+    var arr = [];
+    result.records.forEach(function(record) {
+      arr.push(record.get('n'));
+    })
+    session.close();
+    res.send(JSON.stringify(arr));
+  })
+  .catch(function(error) {
+    res.type('text/plain');
+    res.status(501);
+    res.send('ERROR : '+ error);
+  })
 });
 
 
 
 
 
+app.get('addUser', (req, res) =>{
+    
+    session.run('CREATE')
+    .then(function (result){
 
+    })
+    .catch(function (error){
+      res.type('text/plain');
+      res.status(501);
+      res.send('ERROR : '+ error);
+    })
+});
 
 
 
