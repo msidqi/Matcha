@@ -11,7 +11,7 @@ services:
             - 443:443
             - 3000:3000
         working_dir: /app
-        command: nodemon nodeapp/app.js
+        #command: nodemon -L nodeapp/app.js 1> error.log
         volumes :
             - .:/app
         restart : on-failure
@@ -29,5 +29,9 @@ services:
             - 7474:7474
         environment:
             - NEO4J_AUTH=none
+            - NEO4J_apoc_export_file_enabled=true
+            - NEO4J_apoc_import_file_enabled=true
+            - NEO4J_apoc_import_file_use__neo4j__config=true
+            - NEO4J_dbms_security_procedures_unrestricted=apoc.*
         restart : always
 
