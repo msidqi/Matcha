@@ -12,5 +12,5 @@ RUN apt-get update && apt-get install -y nodejs \
 			&& npm install -g nodemon \
 			&& npm install neo4j-driver express body-parser --save
 ## Start server
-CMD nodemon -L nodeapp/app.js > logs/nodejs.log 2>&1
+CMD nodemon -L --use_strict nodeapp/app.js > logs/nodejs.log 2>&1
 #pm2 start --watch . --name=my-process app.js

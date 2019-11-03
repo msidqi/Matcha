@@ -4,6 +4,7 @@
   "description": "",
   "main": "app.js",
   "dependencies": {
+    "axios": "^0.19.0",
     "body-parser": "^1.19.0",
     "express": "^4.17.1",
     "neo4j-driver": "^1.7.6",
@@ -12,8 +13,8 @@
   },
   "devDependencies": {},
   "scripts": {
-    "start": "nodemon -L app.js"
+    "start": "nodemon -L --use_strict app.js"
   },
-  "author": "",
+  "author": "vmod",
   "license": "ISC"
 }
