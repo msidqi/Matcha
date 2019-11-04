@@ -6,6 +6,7 @@ const userM = require('./models/usersM');
 const userC = require('./controllers/usersC');
 
 openRouter.get('/users/', userM.getUsersAll);
+
 openRouter.post('/users/', userC.createUser, userM.storeUser);
 
 openRouter.get('/', (req, res) => {

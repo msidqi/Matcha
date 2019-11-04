@@ -1,6 +1,8 @@
 const db = require ('./db');
 
-var storeUser = async (req, res) => {
+
+
+const storeUser = async (req, res) => {
   console.log(req.body);
   const cypher = `CREATE (n:user{
     username:{username},
@@ -44,7 +46,7 @@ var storeUser = async (req, res) => {
     }
 }
 
-let getUsersAll =  async (req, res) => {
+const getUsersAll =  async (req, res) => {
   let cypher = 'MATCH (n:user) RETURN n';
   try {
     let result = await db.query(cypher);
@@ -61,24 +63,73 @@ let getUsersAll =  async (req, res) => {
 // if ((err = userM.userExists(userName) ? "" : "Username already exists.") !== "")
 //     return (err);
 
-let userExists = async (req, res, next) => {
-  let cypher = "MATCH (n:user) WHERE n.username = '' RETURN n";
+const userExists = async (uid) => {
+  let cypher = `MATCH (n:user) WHERE n.uid = '${uid}' RETURN n`;
   try {
     let result = await db.query(cypher);
-    next();
+	if (result)
+		return (true);
+	return (false);
   }
   catch (err) {
     throw err;
   }
 }
 
+const getUserById = async (uid) => {
+	let cypher = `MATCH (n:user) WHERE n.uid = '${uid}' RETURN n`;
+	try {
+	  return await db.query(cypher);
+	}
+	catch (err) {
+	  throw err;
+	}
+  }
 
+const emptyUser = () => {
+	return {
+			username: null,
+			firstname: null,
+			lastname: null,
+			email: null,
+			password: null,
+			age: null,
+			score: null,
+			location: null,
+			gender: null,
+			sexualpreferences: null,
+			biography: null,
+			pictures: null,
+			interests: null,
+			tokken: null,
+			conTokken: null,
+		};
+}
 
+const createUserFields = () => {
+	return {
+			username: null,
+			firstname: null,
+			lastname: null,
+			email: null,
+			age: null,
+			score: null,
+			location: null,
+			gender: null,
+			sexualpreferences: null,
+			biography: null,
+			pictures: null,
+			interests: null,
+		};
+}
 
 module.exports = {
   getUsersAll : getUsersAll,
   storeUser : storeUser,
   userExists : userExists,
+  createUserFields : createUserFields,
+  emptyUser : emptyUser,
+  getUserById : getUserById,
 };
 
 
