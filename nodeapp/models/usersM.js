@@ -1,7 +1,9 @@
 const db = require ('./db');
 
-var createUser = function (req, res)  {
+var storeUser = async (req, res) => {
+  console.log(req.body);
   const cypher = `CREATE (n:user{
+    username:{username},
     firstname:{firstname},
     lastname:{lastname},
     email:{email},
@@ -16,9 +18,11 @@ var createUser = function (req, res)  {
     interests:{interests},
     tokken:{tokken}}) RETURN n`;
   const params = {
+    username: req.body.username,
     firstname : req.body.firstname,
     lastname : req.body.lastname,
     email : req.body.email,
+    password: req.body.password,
     age : req.body.age,
     score : req.body.score,
     location : req.body.location,
@@ -31,13 +35,55 @@ var createUser = function (req, res)  {
   };
 
     try {
-      let result = db.query(cypher, params);
+      let result = await db.query(cypher, params);
       res.status(201).send(result);
     }
     catch (err) {
-      res.status(501).send(error);
+      console.log(err);
+      res.status(501).send(err);
     }
 }
+
+let getUsersAll =  async (req, res) => {
+  let cypher = 'MATCH (n:user) RETURN n';
+  try {
+    let result = await db.query(cypher);
+    var arr = [];
+    result.records.forEach((record) => arr.push(record.get('n')));
+    res.status(200).send(JSON.stringify(arr));
+  }
+  catch (err) {
+    res.status(501).send(err);
+  }
+}
+
+// query if username already exists
+// if ((err = userM.userExists(userName) ? "" : "Username already exists.") !== "")
+//     return (err);
+
+let userExists = async (req, res, next) => {
+  let cypher = "MATCH (n:user) WHERE n.username = '' RETURN n";
+  try {
+    let result = await db.query(cypher);
+    next();
+  }
+  catch (err) {
+    throw err;
+  }
+}
+
+
+
+
+module.exports = {
+  getUsersAll : getUsersAll,
+  storeUser : storeUser,
+  userExists : userExists,
+};
+
+
+
+
 
 
 
@@ -60,23 +106,3 @@ var createUser = function (req, res)  {
 //       res.send('ERROR : ' + error);
 //     })
 // }
-
-let getUsersAll =  async function (req, res) {
-  let cypher = 'MATCH (n:user) RETURN n';
-  try {
-    let result = await db.query(cypher);
-    // res.type('application/json;charset=utf-8');
-    res.status(200);
-    var arr = [];
-    result.records.forEach((record) => arr.push(record.get('n')));
-    res.send(JSON.stringify(arr));
-  }
-  catch (err) {
-    res.status(501).send(err);
-  }
-}
-
-module.exports = {
-  getUsersAll : getUsersAll,
-  createUser : createUser
-};

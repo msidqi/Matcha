@@ -11,7 +11,7 @@ services:
             - 443:443
             - 3000:3000
         working_dir: /app
-        #command: nodemon -L nodeapp/app.js 1> error.log
+        command: nodemon nodeapp/app.js 1> error.log
         volumes :
             - .:/app
         restart : on-failure
@@ -19,6 +19,7 @@ services:
             - "database:database"
         tty: true
         restart : always
+
     database:
         container_name: 'db'
         image: "neo4j"
