@@ -3,7 +3,7 @@ const db = require ('./db');
 
 
 const storeUser = async (req, res) => {
-  console.log(req.body);
+  console.log(req.user);
   const cypher = `CREATE (n:user{
     username:{username},
     firstname:{firstname},
@@ -18,73 +18,69 @@ const storeUser = async (req, res) => {
     biography:{biography},
     pictures:{pictures},
     interests:{interests},
-    tokken:{tokken}}) RETURN n`;
-  const params = {
-    username: req.body.username,
-    firstname : req.body.firstname,
-    lastname : req.body.lastname,
-    email : req.body.email,
-    password: req.body.password,
-    age : req.body.age,
-    score : req.body.score,
-    location : req.body.location,
-    gender : req.body.gender,
-    sexualpreferences : req.body.sexualpreferences,
-    biography : req.body.biography,
-    pictures : req.body.pictures,
-    interests : req.body.interests,
-    tokken : req.body.tokken
-  };
-
+    uuid:{uuid},
+    tokken:{tokken},
+    conTokken:{conTokken}}) RETURN n`;
+  const params = req.user;
     try {
       let result = await db.query(cypher, params);
-      res.status(201).send(result);
+      res.status(201).json(result);
     }
     catch (err) {
       console.log(err);
-      res.status(501).send(err);
+      res.status(501).json(err);
     }
 }
 
-const getUsersAll =  async (req, res) => {
+const loadUsersAll =  async (req, res) => {
   let cypher = 'MATCH (n:user) RETURN n';
   try {
     let result = await db.query(cypher);
     var arr = [];
-    result.records.forEach((record) => arr.push(record.get('n')));
-    res.status(200).send(JSON.stringify(arr));
+    result.records.forEach(record => {
+      delete record.get('n').properties.password;
+      arr.push(record.get('n').properties);
+    });
+    res.status(200).json(arr);
   }
   catch (err) {
-    res.status(501).send(err);
+    res.status(501).json(err);
   }
 }
 
-// query if username already exists
-// if ((err = userM.userExists(userName) ? "" : "Username already exists.") !== "")
-//     return (err);
-
-const userExists = async (uid) => {
-  let cypher = `MATCH (n:user) WHERE n.uid = '${uid}' RETURN n`;
+const userExists = async (uuid, username, email) => { // by uuid or username && email
+  let cypher = (username && email)? `MATCH (n:user)
+  WHERE n.email = {email} OR n.username = {username} RETURN n` : `MATCH (n:user)
+  WHERE n.uuid = {uuid} RETURN n`;
   try {
-    let result = await db.query(cypher);
-	if (result)
-		return (true);
-	return (false);
+    let params = {
+      username: username,
+      email: email,
+      uuid: uuid,
+    };
+    let result = await db.query(cypher, params);
+	  if (result.records.length)
+      throw {msg: 'user already exists'};
   }
   catch (err) {
     throw err;
   }
 }
 
-const getUserById = async (uid) => {
-	let cypher = `MATCH (n:user) WHERE n.uid = '${uid}' RETURN n`;
+const getUserById = async (uuid) => {
+	let cypher = `MATCH (n:user) WHERE n.uuid = {uuid} RETURN n`;
 	try {
-	  return await db.query(cypher);
+    let params = {uuid: uuid};
+    let properties = (await db.query(cypher, params)).records[0].get('n').properties;
+    if (!properties)
+      throw new Error('User not found.');
+    delete properties.password;
+    return (properties);
 	}
 	catch (err) {
-	  throw err;
+	  res.status(404).json({msg: err});
 	}
-  }
+}
 
 const emptyUser = () => {
 	return {
@@ -93,7 +89,8 @@ const emptyUser = () => {
 			lastname: null,
 			email: null,
 			password: null,
-			age: null,
+      age: null,
+      uuid: null,
 			score: null,
 			location: null,
 			gender: null,
@@ -113,18 +110,11 @@ const createUserFields = () => {
 			lastname: null,
 			email: null,
 			age: null,
-			score: null,
-			location: null,
-			gender: null,
-			sexualpreferences: null,
-			biography: null,
-			pictures: null,
-			interests: null,
 		};
 }
 
 module.exports = {
-  getUsersAll : getUsersAll,
+  loadUsersAll : loadUsersAll,
   storeUser : storeUser,
   userExists : userExists,
   createUserFields : createUserFields,

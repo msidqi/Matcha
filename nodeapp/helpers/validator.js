@@ -31,7 +31,6 @@ const validateName = function (flastName) {
     return (err);
 };
 
-
 const validatePassword = function (password) {
     let err = "";
     
@@ -93,7 +92,6 @@ const validateUser = function (user) {
 			throw errors;
 	}
 }
-
 
 const userFieldsExist = function (incomingUser, userFields) {
 	let throwErr = false;
