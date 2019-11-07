@@ -16,7 +16,7 @@ app.use(`${apiPrefix}/public`, express.static('public')); // serving static file
 
 app.use(apiPrefix, routes.openRouter);
 
-app.use((req, res) => res.status(404).json({msg: '404 Resource not found.'}));
+app.use((req, res) => res.status(404).json({msg: '404 app : Resource not found.'}));
 
 
 app.listen(port, (err) => {

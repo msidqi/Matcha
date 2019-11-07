@@ -87,8 +87,8 @@ const validateUser = function (user) {
 		errors.password = err;
 	if ((err = validateAge(user.age)) !== "")
 		errors.age = err;
-	for (elem in errors) {
-		if (errors[elem] !== "")
+	for (let key in errors) {
+		if (errors[key] !== "")
 			throw errors;
 	}
 }
@@ -99,15 +99,12 @@ const userFieldsExist = function (incomingUser, userFields) {
 
 	if (typeof incomingUser === 'undefined' || incomingUser === null)
 		throw {error: 'user is undefined'};
-	userFields.username				= incomingUser.username;
-	userFields.firstname			= incomingUser.firstname;
-	userFields.lastname				= incomingUser.lastname;
-	userFields.password				= incomingUser.password;
-	userFields.email				= incomingUser.email;
-	userFields.age					= incomingUser.age;
-	for (let elem in userFields) {
-		if (typeof userFields[elem] === 'undefined' || userFields[elem] === null) {
-			errors[elem] = `field required.`;
+	for (const key in userFields) {
+		userFields[key] = incomingUser[key];
+	}
+	for (let key in userFields) {
+		if (typeof userFields[key] === 'undefined' || userFields[key] === null) {
+			errors[key] = `field required.`;
 			throwErr = true;
 		}
 	}

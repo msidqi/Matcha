@@ -8,10 +8,10 @@ const reqTime = require('./helpers/reqTime');
 
 openRouter.use(reqTime.reqTimeStart);
 
-openRouter.get('/users/', userM.loadUsersAll);
+openRouter.get('/users/', userC.getUsersAll);
 openRouter.get('/users/:id', userC.getUserById);
 
-openRouter.post('/users/', reqTime.reqTimeLog ,userC.createUser, userM.storeUser);
+openRouter.post('/users/', reqTime.reqTimeLog ,userC.createUser);
 
 openRouter.get('/', (req, res) => {
     res.status(200).send('openRouter : GET');

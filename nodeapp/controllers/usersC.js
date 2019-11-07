@@ -7,11 +7,11 @@ const userDefaultValues = (user) => {
     user.uuid = uuid();
     user.gender = '';
     user.score = 0;
-    user.location = '';
+    // user.location = '';
     user.sexualpreferences = '';
     user.biography = '';
 	user.pictures = [];
-    user.interests = [];
+    // user.interests = [];
     user.tokken = '';
     user.conTokken = '';
 };
@@ -19,37 +19,42 @@ const userDefaultValues = (user) => {
 const createUser = async (req, res) => {
     try {
         let user = req.body;
-		validator.userFieldsExist(user, usersM.createUserFields);
+		validator.userFieldsExist(user, usersM.createUserFields());
         validator.validateUser(user);
         userDefaultValues(user);
         await usersM.userExists(null, user.username, user.email);
         user.password = await bcrypt.hash(user.password, 10);
-        req.user = user;
-        next();
+		let uuid = await usersM.storeUser(user);
+        res.status(201).json({uuid: uuid});
     }
     catch (err) {
-        res.status(422).json({ error: err });
+		if (typeof err.message === 'string')
+			res.status(422).json({ error: err.message });
+		else
+			res.status(422).json({ errors: err });
     }
 }
 // let isCorrectPasswd = await bcrypt.compare(user.password, hashed);
 // console.log(isCorrectPasswd);
 const getUserById = async (req, res) => {
     try {
-        let user = await usersM.getUserById(req.params.id);
-        console.log(user);
+        let user = await usersM.loadUserById(req.params.id);
+	    delete user.tokken;
+	    delete user.conTokken;
+	    delete user.password;
         res.status(200).json(user);
     }
     catch (err) {
-        res.status(422).json({error: err});
+        res.status(422).json({error: err.message});
     }
 }
 
 const incomingUser = {
-	username:           'newuser',
+	username:           'newuseer',
 	firstname:          'helloworld',
     lastname:           'helloworld',
     password:           '123456q!',
-	email:              'newuser@newuser.com',
+	email:              'newusedr@newuser.com',
 	age:                26,
 	score:              10,
 	location:           'dasdqw',
@@ -62,7 +67,8 @@ const incomingUser = {
 
 const asy =  async () => {
     try {
-        let user = incomingUser;
+		let user = incomingUser;
+		// console.log(JSON.stringify(incomingUser))
         validator.userFieldsExist(user, usersM.createUserFields);
         validator.validateUser(user);
         user.password = await bcrypt.hash(user.password, 10);
@@ -74,8 +80,27 @@ const asy =  async () => {
 }
 // asy();
 
+
+const getUsersAll = async (req, res) => {
+	try {
+		let result = await usersM.loadUsersAll();
+		var arr = [];
+		result.records.forEach(record => {
+		  delete record.get('n').properties.conTokken;
+		  delete record.get('n').properties.tokken;
+			delete record.get('n').properties.password;
+		  arr.push(record.get('n').properties);
+		});
+		res.status(200).json(arr);
+	  }
+	  catch (err) {
+		res.status(501).json(err);
+	  }
+}
+
 module.exports = {
-    createUser:     createUser,
+	createUser:     createUser,
+	getUsersAll:	getUsersAll,
     getUserById:    getUserById,
 }
 
