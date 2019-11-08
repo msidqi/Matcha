@@ -3,6 +3,7 @@ import Login from './Views/login';
 import Register from './Views/register';
 import Home from './Views/home';
 import Users from './Views/users';
+import Profile from './Views/profile';
 import Nav from './components/navbar';
 import React, { /*useState*/ } from 'react';
 import {
@@ -22,8 +23,9 @@ function App() {
       
       <Switch>
         <Route path="/users" exact component={Users} />
-        <Route path="/login" exact component={Login} />
-        <Route path="/register" exact component={Register} />
+        <Route path="/users/:id" component={Profile} />
+        <Route path="/login" component={Login} />
+        <Route path="/register" component={Register} />
         <Route path="/" exact component={Home} />
       </Switch>
     </Router>
