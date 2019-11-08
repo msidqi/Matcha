@@ -1,16 +1,17 @@
 const hostname = '127.0.0.1';
 const apiPrefix = '/api/v1';
-const port = (process.env.PORT || 3000);
+const port = (process.env.PORT || 3001);
 // const axios = require('axios');
 // const users = await axios.get('https://api.github.com/users');
 const express = require('express');
 const app = express();
 
+const cors = require('cors');
 
 const userM = require('./models/usersM');
 const routes = require('./routes');
 
-
+app.use(cors()); // to add : whitelist options
 app.use(express.json());                                  // body-parse
 app.use(`${apiPrefix}/public`, express.static('public')); // serving static files
 

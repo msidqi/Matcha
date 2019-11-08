@@ -5,18 +5,30 @@ services:
         build:
             context: .
             dockerfile: Dockerfile
-        container_name: 'server'
+        container_name: "server"
+        ports:
+            - 3001:3001
+        working_dir: /app
+        command: nodemon nodeapp/app.js 1> error.log
+        volumes:
+            - .:/app
+        links:
+            - "database:database"
+        tty: true
+        restart : always
+
+    react-server:
+        build:
+            context: .
+            dockerfile: Dockerfile:react-client
+        container_name: "react"
         ports:
             - 80:80
             - 443:443
             - 3000:3000
         working_dir: /app
-        command: nodemon nodeapp/app.js 1> error.log
-        volumes :
+        volumes:
             - .:/app
-        restart : on-failure
-        links:
-            - "database:database"
         tty: true
         restart : always
 

@@ -41,7 +41,8 @@ const getUserById = async (req, res) => {
         let user = await usersM.loadUserById(req.params.id);
 	    delete user.tokken;
 	    delete user.conTokken;
-	    delete user.password;
+		delete user.password;
+		delete user.email;
         res.status(200).json(user);
     }
     catch (err) {
@@ -65,22 +66,6 @@ const incomingUser = {
 	interests:          ['sports', 'chess'],
 };
 
-const asy =  async () => {
-    try {
-		let user = incomingUser;
-		// console.log(JSON.stringify(incomingUser))
-        validator.userFieldsExist(user, usersM.createUserFields);
-        validator.validateUser(user);
-        user.password = await bcrypt.hash(user.password, 10);
-        userDefaultValues(user);
-        await usersM.userExists(null, user.username, user.email);
-    } catch (err) {
-        console.error(err);
-    }
-}
-// asy();
-
-
 const getUsersAll = async (req, res) => {
 	try {
 		let result = await usersM.loadUsersAll();
@@ -88,7 +73,8 @@ const getUsersAll = async (req, res) => {
 		result.records.forEach(record => {
 		  delete record.get('n').properties.conTokken;
 		  delete record.get('n').properties.tokken;
-			delete record.get('n').properties.password;
+		  delete record.get('n').properties.password;
+		  delete record.get('n').properties.email;
 		  arr.push(record.get('n').properties);
 		});
 		res.status(200).json(arr);
@@ -104,6 +90,5 @@ module.exports = {
     getUserById:    getUserById,
 }
 
-//creatUSer
 //deleteUser
 

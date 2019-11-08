@@ -23,7 +23,7 @@ openRouter.post('/', (req, res) => {
 });
 
 // authRouter.get()
-openRouter.use((req, res) => res.status(404).json({msg: '404 Resource not found.'}));
+// openRouter.use((req, res) => res.status(404).json({msg: '404 Resource not found.'}));
 
 module.exports = {
     openRouter : openRouter,
