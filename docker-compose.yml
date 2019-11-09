@@ -8,8 +8,8 @@ services:
         container_name: "server"
         ports:
             - 3001:3001
-        working_dir: /app
-        command: nodemon nodeapp/app.js 1> error.log
+        working_dir: /app/nodeapp
+        command: nodemon app.js
         volumes:
             - .:/app
         links:
@@ -22,11 +22,12 @@ services:
             context: .
             dockerfile: Dockerfile:react-client
         container_name: "react"
+        working_dir: /app/my-app
+        command: npm start
         ports:
             - 80:80
             - 443:443
             - 3000:3000
-        working_dir: /app
         volumes:
             - .:/app
         tty: true

@@ -9,7 +9,7 @@ RUN apt-get update && apt-get upgrade -y && apt-get -y install software-properti
 RUN curl -sL https://deb.nodesource.com/setup_11.x | bash -
 
 RUN apt-get update && apt-get install -y nodejs \
-			&& npm install -g nodemon
+			&& npm install -g nodemon \
 		    && npm install react-router-dom  --save
 
 

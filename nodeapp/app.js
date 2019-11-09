@@ -11,7 +11,7 @@ const cors = require('cors');
 const userM = require('./models/usersM');
 const routes = require('./routes');
 
-app.use(cors()); // to add : whitelist options
+app.use(cors());								// to add : whitelist options
 app.use(express.json());                                  // body-parse
 app.use(`${apiPrefix}/public`, express.static('public')); // serving static files
 

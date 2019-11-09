@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 
 
 function Users() {
+	const white = {color: 'white'};
 
     useEffect(() => { fetchUsers() }, []);
     
@@ -24,7 +25,7 @@ function Users() {
             <ul>
             { users.map( user => (
             <li key={ user.uuid }>
-                <Link to={`/users/${user.uuid}`} >{ user.username }</Link>
+                <Link style={white} to={`/users/${user.uuid}`} >{ user.username }</Link>
             </li>
             ) ) }
             </ul>
