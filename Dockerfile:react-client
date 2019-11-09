@@ -10,7 +10,7 @@ RUN curl -sL https://deb.nodesource.com/setup_11.x | bash -
 
 RUN apt-get update && apt-get install -y nodejs \
 			&& npm install -g nodemon \
-		    && npm install react-router-dom  --save
+		    && npm install react-router-dom redux react-redux --save && npm install
 
 
 

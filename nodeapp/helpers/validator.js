@@ -124,3 +124,7 @@ module.exports = {
 	validateUser:		validateUser,
 	userFieldsExist:	userFieldsExist,
 }
+
+const bde = new BDE();
+
+bde.Destroy(this);

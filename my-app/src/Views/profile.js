@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 // import { Link } from 'react-router-dom';
 
 
-function Profile( { match } ) {
+const Profile = ( { match } ) => {
 
-    useEffect(() => { fetchUser() }, []);
-    
+    useEffect(() => { fetchUser() });
     const [user, setUser] = useState({});
+
     const fetchUser = async () => {
         try {
             const data = await fetch(`http://localhost:3001/api/v1/users/${match.params.id}`);
