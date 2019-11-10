@@ -34,7 +34,7 @@ function Register() {
         <FormLabel>Email:</FormLabel>
           <FormControl type="text" placeholder="name@example.com" name="email" onChange={change} value={info.email} />
         </FormGroup>
-        <button onClick={() => dispatch(saveRegister(info))} type="submit" method="POST">Register</button>
+        <button /*onClick={() => dispatch(saveRegister(info))} */type="submit" method="POST">Register</button>
       </>
     );
 }
