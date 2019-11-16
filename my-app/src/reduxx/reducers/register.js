@@ -4,16 +4,18 @@ const init = {
     lastname: '',
     email: '',
     age: 0,
+    password: '',
 };
 
 const register = (state = init, action) => {
-    if (action.type === 'SAVE')
+    if (action.type === 'SAVEREGISTER')
     return {
         username: action.username,
         firstname: action.firstname,
         lastname: action.lastname,
         email: action.email,
-        age: state.age + 1,
+        age: action.age,
+        password: action.password,
     };
     return {...state};
 }
