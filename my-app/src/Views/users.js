@@ -1,22 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import conf from '../config/config';
 
 function Users() {
-	const white = {color: 'white'};
+	const black = {color: 'black'};
 
-    useEffect(() => { fetchUsers() }, []);
     
     const [users, setUsers] = useState([]);
     const fetchUsers = async () => {
         try {
-            const data = await fetch('http://localhost:3001/api/v1/users');
+            const data = await fetch(`${conf.urlRoot}/users`);
             const users = await data.json();
-            console.log(users);
             setUsers(users);
         } catch (err) {
             console.error(err);
         }
     }
+
+    useEffect(() => { fetchUsers() }, []);
+    
     return (
       <>
         <div>
@@ -24,7 +26,7 @@ function Users() {
             <ul>
             { users.map( user => (
             <li key={ user.uuid }>
-                <Link style={white} to={`/users/${user.uuid}`} >{ user.username }</Link>
+                <Link style={black} to={`/users/${user.uuid}`} >{ user.username }</Link>
             </li>
             ) ) }
             </ul>

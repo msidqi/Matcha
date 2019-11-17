@@ -11,12 +11,10 @@ const storeUser = async (user) => {
 		password:{password},
 		age:{age},
 		score:{score},
-		location:{location},
 		gender:{gender},
 		sexualpreferences:{sexualpreferences},
 		biography:{biography},
 		pictures:{pictures},
-		interests:{interests},
 		uuid:{uuid},
 		tokken:{tokken},
 		conTokken:{conTokken}}) RETURN n`;
@@ -42,9 +40,19 @@ const userExists = async (uuid, username, email) => { // by uuid or username && 
 	uuid: uuid,
   };
   let result = await db.query(cypher, params);
-	if (result.records.length)
-		throw new Error('user already exists');
-  return (result.records[0].get('n').properties)
+	if (result.records.length){
+		let err;
+		if (username && email) {
+			err = {
+				email: (result.records[0].get('n').properties.email !== email) ? "" : "email exists",
+				username: (result.records[0].get('n').properties.username !== username) ? "" : "username exists",
+			}
+		} else {
+			err = `uuid already exists : ${result.records[0].get('n').properties.uuid}`;
+		}
+		throw err;
+	}
+	return (false);
 }
 
 const loadUserById = async (uuid) => {
@@ -52,7 +60,7 @@ const loadUserById = async (uuid) => {
     let params = {uuid: uuid};
 	let result = await db.query(cypher, params);
     if (result.records.length === 0)
-      throw new Error('No user.');
+      throw new Error('No user with that Id.');
     return (result.records[0].get('n').properties);
 }
 

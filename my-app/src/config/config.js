@@ -1,10 +1,10 @@
 const conf = {
     domainName: 'localhost',
-    port:       3000,
+    port:       3001,
     apiVer:     'v1',
     req:        'http',
 };
 
-conf.urlRoot = `${host.req}://${host.domainName}:${host.port}`;
+conf.urlRoot = `${conf.req}://${conf.domainName}:${conf.port}/api/${conf.apiVer}`;
 
 export default conf;

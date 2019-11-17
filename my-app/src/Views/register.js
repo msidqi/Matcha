@@ -2,27 +2,17 @@ import React from 'react';
 import { TextField, makeStyles, Container, Grid, Button } from '@material-ui/core';
 import { useSelector, useDispatch } from 'react-redux';
 import { saveRegister } from '../reduxx/actions/save';
+import UserInput from '../components/UserInput';
+import Submit from '../components/Submit';
+import conf from '../config/config';
 
 //css
 const useStyles = makeStyles(theme => ({
   container: {
     backgroundColor: 'white',
   },
-  textField: {
-    marginLeft: theme.spacing(1),
-    marginRight: theme.spacing(1),
-    width: '100%',
-  },
-  paper: {
-    padding: theme.spacing(1),
-    textAlign: 'center',
-    color: theme.palette.text.secondary,
-  },
-  submit: {
-    margin: theme.spacing(3, 0, 2),
-  },
 }));
-console.log(__dirname);
+// console.log(__dirname);
 
 function Register() {
   
@@ -44,88 +34,65 @@ function Register() {
       email : ${data.email}
       password : ${data.password}
       `);
-      const sendData = async () => {
-        try {
-          await fetch();
-        }
-        catch (e) {
-          console.log(`catch: ${e}`);
-        }
-      }
+      // const sendData = async () => {
+      //   try {
+      //     // let await fetch();
+      //   }
+      //   catch (e) {
+      //     console.log(`catch: ${e}`);
+      //   }
+      // }
     }
+
     return (
-        <Container className={classes.container} maxWidth='sm'>
+      <Container className={classes.container} maxWidth='sm'>
           <form  onSubmit={ registerUser } autoComplete="off" noValidate>
-            <Grid container spacing={1}>
-              <Grid item xs={12}>
-                <TextField
-                    id="standard-basic"
-                    className={classes.textField}
-                    label="username"
-                    margin="normal"
-                    name="username"
-                    value={ data.username }
-                    onChange={ saveState }
-                  />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                    id="standard-basic"
-                    className={classes.textField}
-                    label="firstname"
-                    margin="normal"
-                    name="firstname"
-                    value={ data.firstname }
-                    onChange={ saveState }
-                  />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                    id="standard-basic"
-                    className={classes.textField}
-                    label="lastname"
-                    margin="normal"
-                    name="lastname"
-                    value={ data.lastname }
-                    onChange={ saveState }
-                  />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                    id="standard-basic"
-                    className={classes.textField}
-                    label="email"
-                    margin="normal"
-                    type="email"
-                    name="email"
-                    value={ data.email }
-                    onChange={ saveState }
-                  />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                    id="standard-basic"
-                    className={classes.textField}
-                    label="password"
-                    margin="normal"
-                    type='password'
-                    name="password"
-                    value={ data.password }
-                    onChange={ saveState }
-                  />
-              </Grid>
-              <Grid>
-                <Button 
-                type="submit"
-                color="primary"
-                className={classes.submit}
-                >
-                  Register
-                </Button>
-              </Grid>
+            <Grid container spacing={0}>
+                  <Grid item xs={12}>
+                    <UserInput
+                    label={ 'username' }
+                    val={ data.username }
+                    func={ saveState }
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <UserInput
+                      label={ 'firstname' }
+                      val={ data.firstname }
+                      func={ saveState }
+                      />
+                  </Grid>
+                  <Grid item xs={12}>
+                      <UserInput
+                      label={ 'lastname' }
+                      val={ data.lastname }
+                      func={ saveState }
+                      />
+                  </Grid>
+                  <Grid item xs={12}>
+                      <UserInput
+                      label={ 'email' }
+                      val={ data.email }
+                      func={ saveState }
+                      type="email"
+                      />
+                  </Grid>
+                  <Grid item xs={12}>
+                      <UserInput
+                      label={ 'password' }
+                      val={ data.password }
+                      func={ saveState }
+                      type="password"
+                      />
+                  </Grid>
+                  <Grid>
+                    <Submit
+                      val={ 'Register' }
+                    />
+                  </Grid>
             </Grid>
           </form>
-          </Container>
+      </Container>
     );
 }
 

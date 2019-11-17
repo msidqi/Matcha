@@ -11,7 +11,7 @@ const validateUsername = function (userName) {
     if ((err = /^(.){0,20}$/.test(userName) ? "" : "Username can't be longer than 20 characters.") !== "")
         return (err);
     if ((err = /^(?=.*[0-9])?(?=.*[a-zA-Z])([a-zA-Z0-9]){6,20}$/.test(userName) ? "" : "Username must contain only characters and optionally digits.") !== "")
-        return (err);
+		return (err);
     return (err);
 };
 

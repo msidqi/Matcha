@@ -1,22 +1,21 @@
 import React, { useState, useEffect } from 'react';
-// import { Link } from 'react-router-dom';
+import conf from '../config/config';
 
 
 const Profile = ( { match } ) => {
 
-    useEffect(() => { fetchUser() });
     const [user, setUser] = useState({});
 
     const fetchUser = async () => {
         try {
-            const data = await fetch(`http://localhost:3001/api/v1/users/${match.params.id}`);
+            const data = await fetch(`${conf.urlRoot}/users/${match.params.id}`);
             const user = await data.json();
-            console.log(user);
             setUser(user);
         } catch (err) {
             console.error(err);
         }
     }
+    useEffect(() => { fetchUser() });
     return (
       <>
         <div>
