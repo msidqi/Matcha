@@ -1,10 +1,11 @@
 import React from 'react';
-import { TextField, makeStyles, Container, Grid, Button } from '@material-ui/core';
+import { makeStyles, Container, Grid } from '@material-ui/core';
 import { useSelector, useDispatch } from 'react-redux';
 import { saveRegister } from '../reduxx/actions/save';
 import UserInput from '../components/UserInput';
 import Submit from '../components/Submit';
 import conf from '../config/config';
+import axios from 'axios';
 
 //css
 const useStyles = makeStyles(theme => ({
@@ -12,7 +13,6 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: 'white',
   },
 }));
-// console.log(__dirname);
 
 function Register() {
   
@@ -21,8 +21,11 @@ function Register() {
     // redux state management
     const data = useSelector(state => state.register);
     const dispatch = useDispatch();
-    const saveState = (event) => {
-      dispatch(saveRegister({...data, [event.target.name]:event.target.value}));
+    const saveState = (event, obj = null) => {
+	  if (obj !== null)
+		dispatch(saveRegister({...data, ...obj}));
+	  else
+    	dispatch(saveRegister({...data, [event.target.name]:event.target.value}));
     }
 
     const registerUser = (event) => {
@@ -32,16 +35,22 @@ function Register() {
       firstname : ${data.firstname}
       lastname : ${data.lastname}
       email : ${data.email}
+      age : ${data.age}
       password : ${data.password}
       `);
-      // const sendData = async () => {
-      //   try {
-      //     // let await fetch();
-      //   }
-      //   catch (e) {
-      //     console.log(`catch: ${e}`);
-      //   }
-      // }
+      const sendData = async () => {
+        try {
+          let result = await axios.post(`${conf.apiUrl}/users`, data);
+		  console.log('success');
+		  console.log(result);
+        }
+        catch (e) {
+			if (e.response.data.errors) {
+				saveState(null, { usernameError:e.response.data.errors.username });
+			}
+        }
+	  }
+	  sendData();
     }
 
     return (
@@ -52,7 +61,8 @@ function Register() {
                     <UserInput
                     label={ 'username' }
                     val={ data.username }
-                    func={ saveState }
+					func={ saveState }
+					helperText={ data.usernameError }
                     />
                   </Grid>
                   <Grid item xs={12}>
@@ -75,6 +85,13 @@ function Register() {
                       val={ data.email }
                       func={ saveState }
                       type="email"
+                      />
+                  </Grid>
+				  <Grid item xs={12}>
+                      <UserInput
+                      label={ 'age' }
+                      val={ data.age }
+                      func={ saveState }
                       />
                   </Grid>
                   <Grid item xs={12}>

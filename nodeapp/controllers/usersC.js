@@ -28,6 +28,7 @@ const createUser = async (req, res) => {
         res.status(201).json({uuid: uuid});
     }
     catch (err) {
+		console.log(err);
 		if (typeof err.message === 'string')
 			res.status(422).json({ error: err.message });
 		else

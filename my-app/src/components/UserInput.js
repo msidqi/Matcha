@@ -13,6 +13,9 @@ export default function UserInput(props) {
 
   const classes = useStyles();
 
+  const type = props.type ? props.type : "";
+  const msg = props.helperText ? props.helperText : "";
+  const error = msg ? true : false;
   return (
       <TextField
       id="standard-basic"
@@ -20,8 +23,11 @@ export default function UserInput(props) {
       label={ props.label }
       margin="normal"
       name={ props.label }
-      value={ props.val }
-      onChange={ props.func }
+	  value={ props.val }
+	  type={ type }
+	  onChange={ props.func }
+	  helperText={ msg }
+	  error={ error }
       />
     );
 }

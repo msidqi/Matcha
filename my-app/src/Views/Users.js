@@ -9,8 +9,9 @@ function Users() {
     const [users, setUsers] = useState([]);
     const fetchUsers = async () => {
         try {
-            const data = await fetch(`${conf.urlRoot}/users`);
-            const users = await data.json();
+            const data = await fetch(`${conf.apiUrl}/users`);
+			const users = await data.json();
+			console.log(users)
             setUsers(users);
         } catch (err) {
             console.error(err);

@@ -8,14 +8,16 @@ const Profile = ( { match } ) => {
 
     const fetchUser = async () => {
         try {
-            const data = await fetch(`${conf.urlRoot}/users/${match.params.id}`);
-            const user = await data.json();
-            setUser(user);
+            const data = await fetch(`${conf.apiUrl}/users/${match.params.id}`);
+			const user = await data.json();
+			console.log('here');
+			// console.log(user);
+			setUser(user);
         } catch (err) {
             console.error(err);
         }
     }
-    useEffect(() => { fetchUser() });
+    useEffect(() => { fetchUser() }, []);
     return (
       <>
         <div>

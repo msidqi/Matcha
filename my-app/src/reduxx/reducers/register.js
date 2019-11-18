@@ -3,8 +3,16 @@ const init = {
     firstname: '',
     lastname: '',
     email: '',
-    age: 0,
-    password: '',
+    age: '',
+	password: '',
+	confirmPassword: '',
+	usernameError: '',
+    firstnameError: '',
+    lastnameError: '',
+    emailError: '',
+    ageError: '',
+    passwordError: '',
+    confirmPasswordError: '',
 };
 
 const register = (state = init, action) => {
@@ -15,7 +23,15 @@ const register = (state = init, action) => {
         lastname: action.lastname,
         email: action.email,
         age: action.age,
-        password: action.password,
+		password: action.password,
+		confirmPassword: action.confirmPassword,
+		usernameError: action.usernameError,
+		firstnameError: action.firstnameError,
+		lastnameError: action.lastnameError,
+		emailError: action.emailError,
+		ageError: action.ageError,
+		passwordError: action.passwordError,
+		confirmPasswordError: action.confirmPasswordError,
     };
     return {...state};
 }

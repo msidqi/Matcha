@@ -1,7 +1,6 @@
 const conf = require('./config/config');
 const port = (process.env.PORT || conf.port);
-// const axios = require('axios');
-// const users = await axios.get('https://api.github.com/users');
+
 const express = require('express');
 const app = express();
 
