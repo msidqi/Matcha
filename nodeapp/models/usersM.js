@@ -25,6 +25,30 @@ const storeUser = async (user) => {
 	return(result.records[0].get('n').properties.uuid);
 }
 
+const storeJWT = async (uuid, JWT) => {
+	const cypher = `MATCH (n:user) 
+		WHERE n.uuid = {uuid}
+		SET n.conTokken = {conTokken}
+		RETURN n`;
+   const params = {uuid: uuid, conTokken: JWT};
+   let result = await db.query(cypher, params);
+   if (result.records.length === 0)
+	   throw new Error ('Could not store conTokken.');
+   return(true);
+}
+
+const deleteJWT = async (uuid) => {
+	const cypher = `MATCH (n:user) 
+		WHERE n.uuid = {uuid}
+		SET n.conTokken = {conTokken}
+		RETURN n`;
+   const params = {uuid: uuid, conTokken: ''};
+   let result = await db.query(cypher, params);
+   if (result.records.length === 0)
+	   throw new Error ('Could not delete conTokken.');
+   return(true);
+}
+
 const loadUsersAll =  async () => {
   let cypher = 'MATCH (n:user) RETURN n';
   return await db.query(cypher);
@@ -121,4 +145,6 @@ module.exports = {
   userSchema:		userSchema,
   loadUserById:		loadUserById,
   loadUserBy:		loadUserBy,
+  storeJWT:			storeJWT,
+  deleteJWT:		deleteJWT,
 };

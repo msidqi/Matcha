@@ -1,4 +1,8 @@
 import React from 'react';
+import { useDispatch } from 'react-redux';
+// import { editTokken } from '../reduxx/actions/editTokken';
+// import axios from 'axios';
+import { Link } from 'react-router-dom';
 import {
     Collapse,
     Navbar,
@@ -14,11 +18,19 @@ import {
     } from 'reactstrap';
 
 function NavB(props) {
-    const white = {color: 'white'};
+    // const white = {color: 'white'};
 
     const [isOpen, setIsOpen] = React.useState(false);
     
-    const toggle = () => setIsOpen(!isOpen);
+	const toggle = () => setIsOpen(!isOpen);
+	
+
+	//reduxx
+	// const dispatch = useDispatch();
+
+	// const handleLogout = (event) => {
+	// 	dispatch(editTokken({ conTokken: '' }));
+	// }
     
     return (
       <>
@@ -29,24 +41,25 @@ function NavB(props) {
                 <Collapse isOpen={isOpen} navbar>
                 <Nav className="ml-auto" navbar>
                     <NavItem>
-                    <NavLink href="/home">Home</NavLink>
+					<NavLink tag={Link} to={ '/home' } >Home</NavLink>
                     </NavItem>
                     <NavItem>
-                    <NavLink href="/users">Users</NavLink>
+                    <NavLink tag={Link} to={ '/users' }>Users</NavLink>
                     </NavItem>
                     <UncontrolledDropdown nav inNavbar>
                     <DropdownToggle nav caret>
                         More
                     </DropdownToggle>
                     <DropdownMenu right>
-                        <DropdownItem href="/login">
+                        <DropdownItem tag={Link} to={ '/login' }>
                         Login
                         </DropdownItem>
-                        <DropdownItem href="/register">
+                        <DropdownItem tag={Link} to={ '/register' }>
                         Register
                         </DropdownItem>
                         <DropdownItem divider />
                         <DropdownItem>
+                        {/* <DropdownItem onClick={ handleLogout }> */}
                         Logout
                         </DropdownItem>
                     </DropdownMenu>

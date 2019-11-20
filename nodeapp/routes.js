@@ -2,21 +2,22 @@ const express = require('express');
 const authRouter = express.Router();
 const openRouter = express.Router();
 
-const userM = require('./models/usersM');
-const userC = require('./controllers/usersC');
+const usersM = require('./models/usersM');
+const usersC = require('./controllers/usersC');
 const reqTime = require('./helpers/reqTime');
+const auth = require('./controllers/auth');
 
 openRouter.use(reqTime.reqTimeStart);
 
-openRouter.get('/users/', userC.getUsersAll);
-openRouter.get('/users/:id', userC.getUserById);
+openRouter.get('/users/', usersC.getUsersAll);
+openRouter.get('/users/:id', usersC.getUserById);
 
-openRouter.post('/users/', reqTime.reqTimeLog, userC.createUser);
+openRouter.post('/users/', reqTime.reqTimeLog, usersC.createUser);
 
-openRouter.post('/session/', reqTime.reqTimeLog, userC.loginUser);
+openRouter.post('/session/', reqTime.reqTimeLog, usersC.loginUser);
 
 // ToDo : authUser middleware
-// openRouter.delete('/session/', reqTime.reqTimeLog, authUser ,userC.logoutUser);
+openRouter.delete('/session/', reqTime.reqTimeLog, auth.middleware, usersC.logoutUser);
 
 
 openRouter.get('/', (req, res) => {

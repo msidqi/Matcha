@@ -2,6 +2,8 @@ const validator = require('../helpers/validator');
 const usersM = require('../models/usersM');
 const bcrypt = require('bcryptjs');
 const uuid = require('uuid/v4');
+const auth = require('./auth');
+
 
 const userDefaultValues = (user) => {
     user.uuid = uuid();
@@ -47,8 +49,28 @@ const loginUser = async (req, res) => {
 		let userdb = await usersM.loadUserBy('email', user.email);
 		if (user.password == "" || !user.password || !await bcrypt.compare(user.password, userdb.password))
 			throw { passwordError: 'Incorrect password.'};
-		const session = { uuid: userdb.uuid, conTokken: userdb.conTokken };
-		res.status(200).json( session );
+
+		const JWT = auth.createJWT(userdb.uuid);
+		await usersM.storeJWT(userdb.uuid, JWT);
+		res.cookie('JWT', JWT, { httpOnly: true });
+		res.status(200).json( { msg: 'logged in', uuid: userdb.uuid } );
+	}
+	catch (err) {
+		console.log(err);
+		if (typeof err.message === 'string')
+			res.status(422).json({ error: err.message });
+		else
+			res.status(400).json({ errors: err });
+	}
+}
+
+const logoutUser = async (req, res) => {
+	try {
+		let user = req.body;
+
+		await usersM.deleteJWT(user.uuid);
+		res.clearCookie('JWT');
+		res.status(200).json( { msg: 'user has logged out.' } );
 	}
 	catch (err) {
 		console.log(err);
@@ -113,6 +135,7 @@ module.exports = {
 	getUsersAll:	getUsersAll,
 	getUserById:    getUserById,
 	loginUser:		loginUser,
+	logoutUser:		logoutUser,
 }
 
 //deleteUser

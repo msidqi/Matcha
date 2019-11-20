@@ -49,13 +49,11 @@ const validatePassword = function (password) {
 
 const validateEmail = function (email) {
     let err = "";
-    console.log('validate email ------');
-    console.log(email.length);
+
     if ((err = (typeof email === 'string') ? "" : "variable is not a string.") !== "")
 		return (err);
 	if ((err = email.length !== 0 ? "" : "Please enter an email.") !== "")
 		return (err);
-    console.log('more than 0');
     if ((err = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email) ? "" : "Not a valide email address.") !== "")
         return (err);
     return (err);

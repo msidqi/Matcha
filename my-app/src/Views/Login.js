@@ -2,6 +2,7 @@ import React from 'react';
 import { makeStyles, Container, Grid } from '@material-ui/core';
 import { useSelector, useDispatch } from 'react-redux';
 import { saveLogin } from '../reduxx/actions/save';
+// import { editTokken } from '../reduxx/actions/editTokken';
 import UserInput from '../components/UserInput';
 import Submit from '../components/Submit';
 import conf from '../config/config';
@@ -36,13 +37,14 @@ function Login() {
       const sendData = async () => {
         try {
           let result = await axios.post(`${conf.apiUrl}/session/`, data);
-          // console.log('success');
-          // console.log(result.data);
+          console.log('success');
+          console.log(result.data);
           const errors = {
             emailError: '',
             passwordError: '',
           };
-          handleChange(errors);
+		  handleChange(errors);
+		//   dispatch(editTokken(result.data));
         }
         catch (e) {
           if (e.response.data.errors) {

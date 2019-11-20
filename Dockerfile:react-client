@@ -18,6 +18,7 @@ RUN apt-get update && apt-get install -y nodejs \
 			@date-io/date-fns \
 			date-fns@next \
 			reactstrap bootstrap \
+			react-cookie \
 			axios --save
 			
 			

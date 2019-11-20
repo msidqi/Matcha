@@ -42,7 +42,14 @@ function Register() {
           let result = await axios.post(`${conf.apiUrl}/users`, data);
           // console.log('success');
           // console.log(result.data);
-          const errors = {
+          const reset = {
+			username: '',
+			firstname: '',
+			lastname: '',
+			email: '',
+			birthdate: '',
+			birthdateShort: '',
+			password: '',
             usernameError: '',
             firstnameError: '',
             lastnameError: '',
@@ -50,7 +57,7 @@ function Register() {
             birthdateError: '',
             passwordError: '',
           };
-          handleChange(errors);
+          handleChange(reset);
         }
         catch (e) {
           if (e.response.data.errors) {

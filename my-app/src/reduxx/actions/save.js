@@ -1,5 +1,5 @@
 export const saveLogin = (data = {}) => {
-    if (Object.keys(data).length === 0)
+    if (Object.keys(data).length == 0)
         return {
             type: 'SAVELOGIN',
         };
@@ -10,7 +10,7 @@ export const saveLogin = (data = {}) => {
 }
 
 export const saveRegister = (data = {}) => {
-    if (Object.keys(data).length === 0)
+    if (Object.keys(data).length == 0)
         return {
             type: 'SAVEREGISTER',
         };
