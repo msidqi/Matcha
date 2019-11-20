@@ -1,30 +1,62 @@
 import React from 'react';
-import { Link } from 'react-router-dom'
+import {
+    Collapse,
+    Navbar,
+    NavbarToggler,
+    NavbarBrand,
+    Nav,
+    NavItem,
+    NavLink,
+    UncontrolledDropdown,
+    DropdownToggle,
+    DropdownMenu,
+    DropdownItem,
+    } from 'reactstrap';
 
-
-function Nav() {
+function NavB(props) {
     const white = {color: 'white'};
 
+    const [isOpen, setIsOpen] = React.useState(false);
+    
+    const toggle = () => setIsOpen(!isOpen);
+    
     return (
       <>
-        <div className="navbar" >
-            <ul>
-                <li>
-                    <Link style={white} to="/home">Home</Link>
-                </li>
-                <li>
-                    <Link style={white} to="/users">Users</Link>
-                </li>
-                <li>
-                    <Link style={white} to="/register">Register</Link>
-                </li>
-                <li>
-                    <Link style={white} to="/login">Login</Link>
-                </li>
-            </ul>
+        <div>
+            <Navbar color="light" light expand="md">
+                <NavbarBrand href="/">Matcha</NavbarBrand>
+                <NavbarToggler onClick={toggle} />
+                <Collapse isOpen={isOpen} navbar>
+                <Nav className="ml-auto" navbar>
+                    <NavItem>
+                    <NavLink href="/home">Home</NavLink>
+                    </NavItem>
+                    <NavItem>
+                    <NavLink href="/users">Users</NavLink>
+                    </NavItem>
+                    <UncontrolledDropdown nav inNavbar>
+                    <DropdownToggle nav caret>
+                        More
+                    </DropdownToggle>
+                    <DropdownMenu right>
+                        <DropdownItem href="/login">
+                        Login
+                        </DropdownItem>
+                        <DropdownItem href="/register">
+                        Register
+                        </DropdownItem>
+                        <DropdownItem divider />
+                        <DropdownItem>
+                        Logout
+                        </DropdownItem>
+                    </DropdownMenu>
+                    </UncontrolledDropdown>
+                </Nav>
+                </Collapse>
+            </Navbar>
         </div>
       </>
     );
 }
   
-  export default Nav;
+  export default NavB;

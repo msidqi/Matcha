@@ -20,7 +20,7 @@ const createUser = async (req, res) => {
     try {
         let user = req.body;
 		validator.userFieldsExist(user, usersM.createUserFields());
-        validator.validateUser(user);
+        validator.user(user);
         userDefaultValues(user);
         await usersM.userExists(null, user.username, user.email);
         user.password = await bcrypt.hash(user.password, 10);
@@ -32,11 +32,33 @@ const createUser = async (req, res) => {
 		if (typeof err.message === 'string')
 			res.status(422).json({ error: err.message });
 		else
-			res.status(422).json({ errors: err });
+			res.status(400).json({ errors: err });
     }
 }
-// let isCorrectPasswd = await bcrypt.compare(user.password, hashed);
-// console.log(isCorrectPasswd);
+
+const loginUser = async (req, res) => {
+	try {
+		let user = req.body;
+		let err = "";
+
+		validator.loginFieldsExist(user, usersM.loginFields());
+		if (err = validator.email(user.email))
+			throw { emailError: err };
+		let userdb = await usersM.loadUserBy('email', user.email);
+		if (user.password == "" || !user.password || !await bcrypt.compare(user.password, userdb.password))
+			throw { passwordError: 'Incorrect password.'};
+		const session = { uuid: userdb.uuid, conTokken: userdb.conTokken };
+		res.status(200).json( session );
+	}
+	catch (err) {
+		console.log(err);
+		if (typeof err.message === 'string')
+			res.status(422).json({ error: err.message });
+		else
+			res.status(400).json({ errors: err });
+	}
+}
+
 const getUserById = async (req, res) => {
     try {
         let user = await usersM.loadUserById(req.params.id);
@@ -44,6 +66,7 @@ const getUserById = async (req, res) => {
 	    delete user.conTokken;
 		delete user.password;
 		delete user.email;
+		user.age = validator.calculateAge(user.birthdateShort);
         res.status(200).json(user);
     }
     catch (err) {
@@ -88,7 +111,8 @@ const getUsersAll = async (req, res) => {
 module.exports = {
 	createUser:     createUser,
 	getUsersAll:	getUsersAll,
-    getUserById:    getUserById,
+	getUserById:    getUserById,
+	loginUser:		loginUser,
 }
 
 //deleteUser

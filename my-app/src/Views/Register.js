@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { saveRegister } from '../reduxx/actions/save';
 import UserInput from '../components/UserInput';
 import Submit from '../components/Submit';
+import BirthDate from '../components/BirthDate';
 import conf from '../config/config';
 import axios from 'axios';
 
@@ -15,42 +16,57 @@ const useStyles = makeStyles(theme => ({
 }));
 
 function Register() {
-  
+
     // css
     const classes = useStyles();
     // redux state management
     const data = useSelector(state => state.register);
     const dispatch = useDispatch();
-    const saveState = (event, obj = null) => {
-	  if (obj !== null)
-		dispatch(saveRegister({...data, ...obj}));
-	  else
-    	dispatch(saveRegister({...data, [event.target.name]:event.target.value}));
+
+    const handleEventChange = (event, obj = null) => {
+        dispatch(saveRegister({...data, [event.target.name]:event.target.value}));
+    }
+
+    const handleChange = (obj) => {
+      dispatch(saveRegister({...data, ...obj}));
+    }
+    const handleDateChange = (date) => {
+      dispatch(saveRegister({...data, birthdate: date, birthdateShort: date.toLocaleDateString('fr-MA')}));
     }
 
     const registerUser = (event) => {
       event.preventDefault();
-      console.log(`
-      username : ${data.username}
-      firstname : ${data.firstname}
-      lastname : ${data.lastname}
-      email : ${data.email}
-      age : ${data.age}
-      password : ${data.password}
-      `);
+      // console.log(data);
       const sendData = async () => {
         try {
           let result = await axios.post(`${conf.apiUrl}/users`, data);
-		  console.log('success');
-		  console.log(result);
+          // console.log('success');
+          // console.log(result.data);
+          const errors = {
+            usernameError: '',
+            firstnameError: '',
+            lastnameError: '',
+            emailError: '',
+            birthdateError: '',
+            passwordError: '',
+          };
+          handleChange(errors);
         }
         catch (e) {
-			if (e.response.data.errors) {
-				saveState(null, { usernameError:e.response.data.errors.username });
-			}
+          if (e.response.data.errors) {
+            const errors = {
+              usernameError: e.response.data.errors.usernameError,
+              firstnameError: e.response.data.errors.firstnameError,
+              lastnameError: e.response.data.errors.lastnameError,
+              emailError: e.response.data.errors.emailError,
+              birthdateError: e.response.data.errors.birthdateError,
+              passwordError: e.response.data.errors.passwordError,
+            };
+            handleChange(errors);
+			    }
         }
-	  }
-	  sendData();
+	    }
+	    sendData();
     }
 
     return (
@@ -59,47 +75,51 @@ function Register() {
             <Grid container spacing={0}>
                   <Grid item xs={12}>
                     <UserInput
-                    label={ 'username' }
-                    val={ data.username }
-					func={ saveState }
-					helperText={ data.usernameError }
+                      label={ 'username' }
+                      val={ data.username }
+                      func={ handleEventChange }
+                      helperText={ data.usernameError }
                     />
                   </Grid>
                   <Grid item xs={12}>
                     <UserInput
                       label={ 'firstname' }
                       val={ data.firstname }
-                      func={ saveState }
+                      func={ handleEventChange }
+                      helperText={ data.firstnameError }
                       />
                   </Grid>
                   <Grid item xs={12}>
                       <UserInput
                       label={ 'lastname' }
                       val={ data.lastname }
-                      func={ saveState }
+                      func={ handleEventChange }
+                      helperText={ data.lastnameError }
                       />
                   </Grid>
                   <Grid item xs={12}>
                       <UserInput
                       label={ 'email' }
                       val={ data.email }
-                      func={ saveState }
+                      func={ handleEventChange }
+                      helperText={ data.emailError }
                       type="email"
-                      />
-                  </Grid>
-				  <Grid item xs={12}>
-                      <UserInput
-                      label={ 'age' }
-                      val={ data.age }
-                      func={ saveState }
                       />
                   </Grid>
                   <Grid item xs={12}>
                       <UserInput
                       label={ 'password' }
                       val={ data.password }
-                      func={ saveState }
+                      func={ handleEventChange }
+                      helperText={ data.passwordError }
                       type="password"
+                      />
+                  </Grid>
+                  <Grid item xs={12}>
+                      <BirthDate 
+                        val={ data.birthdate }
+                        func={ handleDateChange }
+                        helperText={ data.birthdateError }
                       />
                   </Grid>
                   <Grid>

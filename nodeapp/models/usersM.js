@@ -9,7 +9,7 @@ const storeUser = async (user) => {
 		lastname:{lastname},
 		email:{email},
 		password:{password},
-		age:{age},
+		birthdateShort:{birthdateShort},
 		score:{score},
 		gender:{gender},
 		sexualpreferences:{sexualpreferences},
@@ -44,11 +44,11 @@ const userExists = async (uuid, username, email) => { // by uuid or username && 
 		let err;
 		if (username && email) {
 			err = {
-				email: (result.records[0].get('n').properties.email !== email) ? "" : "email exists",
-				username: (result.records[0].get('n').properties.username !== username) ? "" : "username exists",
+				emailError: (result.records[0].get('n').properties.email !== email) ? "" : "email exists.",
+				usernameError: (result.records[0].get('n').properties.username !== username) ? "" : "username exists.",
 			}
 		} else {
-			err = `uuid already exists : ${result.records[0].get('n').properties.uuid}`;
+			err = `uuid already exists : ${result.records[0].get('n').properties.uuid}.`;
 		}
 		throw err;
 	}
@@ -64,6 +64,15 @@ const loadUserById = async (uuid) => {
     return (result.records[0].get('n').properties);
 }
 
+const loadUserBy = async (key, val) => {
+	let cypher = `MATCH (n:user) WHERE n.${key} = {${key}} RETURN n`;
+    let params = {[`${key}`]: val};
+	let result = await db.query(cypher, params);
+    if (result.records.length === 0)
+      throw {[`${key}Error`]: `No user with that ${key}.`}
+    return (result.records[0].get('n').properties);
+}
+
 const userSchema = () => {
 	return {
 			username: null,
@@ -71,7 +80,7 @@ const userSchema = () => {
 			lastname: null,
 			email: null,
 			password: null,
-    		age: null,
+			birthdateShort: null,
   		    uuid: null,
 			score: null,
 			// location: null,
@@ -91,16 +100,25 @@ const createUserFields = () => {
 			firstname: null,
 			lastname: null,
 			email: null,
-			age: null,
+			birthdateShort: null,
+			password: null,
+		};
+}
+
+const loginFields = () => {
+	return {
+			email: null,
 			password: null,
 		};
 }
 
 module.exports = {
-  loadUsersAll : loadUsersAll,
-  storeUser : storeUser,
-  userExists : userExists,
-  createUserFields : createUserFields,
-  userSchema : userSchema,
-  loadUserById : loadUserById,
+  loadUsersAll:		loadUsersAll,
+  storeUser:		storeUser,
+  userExists:		userExists,
+  createUserFields:	createUserFields,
+  loginFields:		loginFields,
+  userSchema:		userSchema,
+  loadUserById:		loadUserById,
+  loadUserBy:		loadUserBy,
 };

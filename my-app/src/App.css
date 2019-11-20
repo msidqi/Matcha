@@ -34,7 +34,7 @@ body {
   justify-content: space-around; */
 }
 
-.navbar {
+.navbarr {
   background-color: rgba(180, 34, 102, 0.678);
   height: 50px;
   align-items: center;
@@ -42,7 +42,7 @@ body {
   justify-content: space-around;
 }
 
-.navbar ul {
+.navbarr ul {
   width: 40%;
   list-style: none;
   align-items: center;

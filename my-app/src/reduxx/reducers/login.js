@@ -1,6 +1,8 @@
 const init = {
     email: '',
     password: '',
+    emailError: '',
+    passwordError: '',
 };
 
 const login = (state = init, action) => {
@@ -8,6 +10,8 @@ const login = (state = init, action) => {
         return {
             email: action.email,
             password: action.password,
+            emailError: action.emailError,
+            passwordError: action.passwordError,
         };
     return {...state}
 }

@@ -4,7 +4,7 @@ import Register from '../Views/Register';
 import Home from '../Views/Home';
 import Users from '../Views/Users';
 import Profile from '../Views/Profile';
-import Nav from './navbar';
+import NavB from './navbar';
 import {
     BrowserRouter as Router,
     Switch,
@@ -16,11 +16,12 @@ import {
 export default function Routes() {
     return (
         <Router>
-            <Nav />
+            <NavB />
             <Switch>
                 <Route path="/users" exact component={Users} />
                 <Route path="/users/:id" component={Profile} />
                 <Route path="/login" component={Login} />
+                <Route path="/home" component={Home} />
                 <Route path="/register" component={Register} />
                 <Route path="/" exact component={Home} />
             </Switch>

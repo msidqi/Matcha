@@ -12,7 +12,7 @@ var query = async (query, params) => {
       } catch (error) {
         throw(new Error(error))
       }
-  }
+}
 
 var querypromise = (query, params) => {
     const session = driver.session();

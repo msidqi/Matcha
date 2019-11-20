@@ -14,6 +14,10 @@ RUN apt-get update && apt-get install -y nodejs \
 			redux \
 			react-redux \
 			@material-ui/core \
+			@material-ui/pickers \
+			@date-io/date-fns \
+			date-fns@next \
+			reactstrap bootstrap \
 			axios --save
 			
 			
