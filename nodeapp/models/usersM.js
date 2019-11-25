@@ -97,28 +97,7 @@ const loadUserBy = async (key, val) => {
     return (result.records[0].get('n').properties);
 }
 
-const userSchema = () => {
-	return {
-			username: null,
-			firstname: null,
-			lastname: null,
-			email: null,
-			password: null,
-			birthdateShort: null,
-  		    uuid: null,
-			score: null,
-			// location: null,
-			// gender: null,
-			// sexualpreferences: null,
-			biography: null,
-			pictures: null,
-			// interests: null,
-			tokken: null,
-			conTokken: null,
-		};
-}
-
-const createUserFields = () => {
+const registerFields = () => {
 	return {
 			username: null,
 			firstname: null,
@@ -137,14 +116,13 @@ const loginFields = () => {
 }
 
 module.exports = {
-  loadUsersAll:		loadUsersAll,
+  loadAll:			loadUsersAll,
   storeUser:		storeUser,
   userExists:		userExists,
-  createUserFields:	createUserFields,
+  registerFields:	registerFields,
   loginFields:		loginFields,
-  userSchema:		userSchema,
-  loadUserById:		loadUserById,
-  loadUserBy:		loadUserBy,
+  loadById:			loadUserById,
+  loadBy:			loadUserBy,
   storeJWT:			storeJWT,
   deleteJWT:		deleteJWT,
 };

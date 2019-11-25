@@ -186,7 +186,7 @@ const validateUserInfo = function (params, user) {
 	}
 }
 
-const userFieldsExist = function (incomingUser, userFields) {
+const registerFieldsExist = function (incomingUser, userFields) {
 	let throwErr = false;
 	let errors = {};
 
@@ -234,7 +234,7 @@ module.exports = {
 	age:				validateAge,
 	birthdate:			validateBirthDate,
 	user:				validateUser,
-	userFieldsExist:	userFieldsExist,
+	registerFieldsExist:	registerFieldsExist,
 	calculateAge:		calculateAge,
 	isValidDate:		isValidDate,
 	loginFieldsExist:	loginFieldsExist,

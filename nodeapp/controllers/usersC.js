@@ -4,16 +4,14 @@ const bcrypt = require('bcryptjs');
 const uuid = require('uuid/v4');
 const auth = require('./auth');
 
-
+//       add/correct user values before registration 
 const userDefaultValues = (user) => {
     user.uuid = uuid();
     user.gender = '';
     user.score = 0;
-    // user.location = '';
     user.sexualpreferences = '';
     user.biography = '';
 	user.pictures = [];
-    // user.interests = [];
     user.tokken = '';
     user.conTokken = '';
 };
@@ -21,13 +19,13 @@ const userDefaultValues = (user) => {
 const createUser = async (req, res) => {
     try {
         let user = req.body;
-		validator.userFieldsExist(user, usersM.createUserFields());
-        validator.user(user);
-        userDefaultValues(user);
+		validator.registerFieldsExist(user, usersM.registerFields()); // check if user has the required keys to register
+        validator.user(user);										// validate user object's values
+        userDefaultValues(user);									// default values
         await usersM.userExists(null, user.username, user.email);
         user.password = await bcrypt.hash(user.password, 10);
 		let uuid = await usersM.storeUser(user);
-        res.status(201).json({uuid: uuid});
+        res.status(201).json({uuid: uuid});	// return uuid on success
     }
     catch (err) {
 		console.log(err);
@@ -43,17 +41,17 @@ const loginUser = async (req, res) => {
 		let user = req.body;
 		let err = "";
 
-		validator.loginFieldsExist(user, usersM.loginFields());
-		if (err = validator.email(user.email))
+		validator.loginFieldsExist(user, usersM.loginFields()); // check if user has the required keys to login
+		if (err = validator.email(user.email))					//	validate email
 			throw { emailError: err };
-		let userdb = await usersM.loadUserBy('email', user.email);
+		let userdb = await usersM.loadBy('email', user.email);	// load user by email if it exists, else throw err
 		if (user.password == "" || !user.password || !await bcrypt.compare(user.password, userdb.password))
 			throw { passwordError: 'Incorrect password.'};
 
 		const JWT = auth.createJWT(userdb.uuid);
 		await usersM.storeJWT(userdb.uuid, JWT);
 		res.cookie('JWT', JWT, { httpOnly: true });
-		res.status(200).json( { msg: 'logged in', uuid: userdb.uuid } );
+		res.status(200).json( { msg: 'logged in', uuid: userdb.uuid } );	// TODO: send JSON web token
 	}
 	catch (err) {
 		console.log(err);
@@ -83,12 +81,12 @@ const logoutUser = async (req, res) => {
 
 const getUserById = async (req, res) => {
     try {
-        let user = await usersM.loadUserById(req.params.id);
-	    delete user.tokken;
+        let user = await usersM.loadById(req.params.id);
+	    delete user.tokken;										// delete secret fields
 	    delete user.conTokken;
 		delete user.password;
 		delete user.email;
-		user.age = validator.calculateAge(user.birthdateShort);
+		user.age = validator.calculateAge(user.birthdateShort);	// calculate age from birthdate
         res.status(200).json(user);
     }
     catch (err) {
@@ -96,28 +94,12 @@ const getUserById = async (req, res) => {
     }
 }
 
-const incomingUser = {
-	username:           'newuseer',
-	firstname:          'helloworld',
-    lastname:           'helloworld',
-    password:           '123456q!',
-	email:              'newusedr@newuser.com',
-	age:                26,
-	score:              10,
-	location:           'dasdqw',
-	gender:             'male',
-	sexualpreferences:  'straight',
-	biography:          'location',
-	pictures:           ['pic1', 'pic2'],
-	interests:          ['sports', 'chess'],
-};
-
 const getUsersAll = async (req, res) => {
 	try {
-		let result = await usersM.loadUsersAll();
+		let result = await usersM.loadAll();
 		var arr = [];
 		result.records.forEach(record => {
-		  delete record.get('n').properties.conTokken;
+		  delete record.get('n').properties.conTokken;	// delete secret fields
 		  delete record.get('n').properties.tokken;
 		  delete record.get('n').properties.password;
 		  delete record.get('n').properties.email;
@@ -131,11 +113,11 @@ const getUsersAll = async (req, res) => {
 }
 
 module.exports = {
-	createUser:     createUser,
-	getUsersAll:	getUsersAll,
-	getUserById:    getUserById,
-	loginUser:		loginUser,
-	logoutUser:		logoutUser,
+	create:     createUser,
+	getAll:		getUsersAll,
+	getById:    getUserById,
+	login:		loginUser,
+	logout:		logoutUser,
 }
 
 //deleteUser

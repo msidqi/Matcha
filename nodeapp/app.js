@@ -13,7 +13,7 @@ app.use(cors());								// to add : whitelist options
 app.use(express.json());                                  // body-parse
 app.use(`${conf.baseUrl}/public`, express.static('public')); // serving static files
 
-app.use(conf.baseUrl, routes.openRouter);
+app.use(conf.baseUrl, routes.Router);
 
 app.use((req, res) => res.status(404).json({msg: '404 app : Resource not found.'}));
 
