@@ -1,6 +1,6 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
-// import { editTokken } from '../reduxx/actions/editTokken';
+// import { editToken } from '../reduxx/actions/editToken';
 // import axios from 'axios';
 import { Link } from 'react-router-dom';
 import {
@@ -29,7 +29,7 @@ function NavB(props) {
 	// const dispatch = useDispatch();
 
 	// const handleLogout = (event) => {
-	// 	dispatch(editTokken({ conTokken: '' }));
+	// 	dispatch(editToken({ conToken: '' }));
 	// }
     
     return (

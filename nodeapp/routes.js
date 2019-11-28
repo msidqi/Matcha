@@ -2,7 +2,7 @@ const express = require('express');
 const Router = express.Router();
 
 const usersC = require('./controllers/usersC');
-const auth = require('./controllers/auth');
+const auth = require('./middlewares/auth');
 
 
 Router.get('/users/', usersC.getAll);
@@ -10,12 +10,12 @@ Router.get('/users/:id', usersC.getById);
 
 Router.post('/users/', usersC.create);
 
-// Router.patch('/users/:id', usersC.edit)
+Router.patch('/users/:id', usersC.edit);
 
-Router.post('/session/', usersC.login);
+Router.post('/session/:id', usersC.login);
 
 // ToDo : authUser middleware
-Router.delete('/session/', auth.middleware, usersC.logout);
+Router.delete('/session/:id', auth.middleware, usersC.logout);
 
 
 Router.get('/', (req, res) => {

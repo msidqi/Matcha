@@ -2,7 +2,7 @@ import React from 'react';
 import { makeStyles, Container, Grid } from '@material-ui/core';
 import { useSelector, useDispatch } from 'react-redux';
 import { saveLogin } from '../reduxx/actions/save';
-// import { editTokken } from '../reduxx/actions/editTokken';
+// import { editToken } from '../reduxx/actions/editToken';
 import UserInput from '../components/UserInput';
 import Submit from '../components/Submit';
 import conf from '../config/config';
@@ -44,7 +44,7 @@ function Login() {
             passwordError: '',
           };
 		  handleChange(errors);
-		//   dispatch(editTokken(result.data));
+		//   dispatch(editToken(result.data));
         }
         catch (e) {
           if (e.response.data.errors) {

@@ -1,5 +1,5 @@
 const db_user = 'neo4j';
-const db_passwd = 'neo4j';
+const db_passwd = 'root';
 const neo4j = require('neo4j-driver').v1
 const driver = neo4j.driver('bolt://database', neo4j.auth.basic(db_user, db_passwd));
 

@@ -47,6 +47,16 @@ const validatePassword = function (password) {
     return (err);
 }
 
+const validateConfirmPassword = function (confirmpassword, password) {
+    let err = "";
+
+	if ((err = (typeof confirmpassword === 'string') ? "" : "variable is not a string.") !== "")
+		return (err);
+	if ((err = password === confirmpassword ? "" : "Password does not match.") !== "")
+		return (err);
+    return (err);
+}
+
 const validateEmail = function (email) {
     let err = "";
 
@@ -132,11 +142,30 @@ const validateBirthDate = function (birthdate) {
     return (err);
 }
 
+const validateGender = (gender) => {
+	let err = ''
+	if ((err = /^Male$|^Female$/g.test(gender) ? "" : "Gender Is either Male or Female.") !== "")
+		return (err);
+	return err
+}
 
+const validateSexpref = (sexualpreference) => {
+	let err = ''
+	if ((err = /^Heterosexual$|^Homosexual$|^Bisexual$/g.test(sexualpreference) ? "" : "Choose your Orientation.") !== "")
+		return (err);
+	return err
+}
 
-
-
-
+const validateBio = (bio) =>{
+	let err = ''
+	
+	if ((err = (typeof bio === 'string') ? "" : "variable is not a string.") !== "")
+		return (err);
+	bio = bio.trim();
+	if ((err = (bio.length <= 250 || bio.length === 0) ? "" : "variable is not a string.") !== "")
+		return (err);
+	return(err)
+}
 
 const validateUser = function (user) {
 	let errors = {};
@@ -152,6 +181,8 @@ const validateUser = function (user) {
 		errors.emailError = err;
     if ((err = validatePassword(user.password)) !== "")
 		errors.passwordError = err;
+	if ((err = validateConfirmPassword(user.confirmpassword, user.password)) !== "")
+		errors.confirmpasswordError = err;
 	if ((err = validateBirthDate(user.birthdateShort)) !== "")
 		errors.birthdateError = err;
 	for (let key in errors) {
@@ -160,31 +191,50 @@ const validateUser = function (user) {
 	}
 }
 
-const validationFunc = {
-	username:			validateUsername,
-    password:			validatePassword,
-	email:				validateEmail,
-	age:				validateAge,
-	birthdate:			validateBirthDate,
-	user:				validateUser,
-}
-
-const validateUserInfo = function (params, user) {
+const validateSetup = (user) =>{
 	let errors = {};
 	let err = "";
 
-	params = params.split(' ');
-	for (let i = 0; i < params.length; i++) {
-		let key = params[i];
-		let val = user[key];
-		if (val && validationFunc[key] && (err = validationFunc[key](val)) !== "")
-			errors[`${key}Error`] =	err;
-	}
+	if ((err = validateGender(user.gender)) !== "")
+		errors.genderError = err;
+	if ((err = validateSexpref(user.sexpref)) !== "")
+		errors.sexprefError = err;
+	if ((err = validateBio(user.bio)) !== "")
+		errors.bioError = err;
 	for (let key in errors) {
 		if (errors[key] !== "")
 			throw errors;
 	}
 }
+
+// const validationFunc = {
+// 	username:			validateUsername,
+//     password:			validatePassword,
+// 	email:				validateEmail,
+// 	age:				validateAge,
+// 	birthdate:			validateBirthDate,
+// 	user:				validateUser,
+// 	gender:				validateGender,
+// 	sexpref:			validateSexpref,
+// 	bio:				validateBio,
+// }
+
+// const validateUserInfo = function (params, user) {
+// 	let errors = {};
+// 	let err = "";
+
+// 	params = params.split(' ');
+// 	for (let i = 0; i < params.length; i++) {
+// 		let key = params[i];
+// 		let val = user[key];
+// 		if (val && validationFunc[key] && (err = validationFunc[key](val)) !== "")
+// 			errors[`${key}Error`] =	err;
+// 	}
+// 	for (let key in errors) {
+// 		if (errors[key] !== "")
+// 			throw errors;
+// 	}
+// }
 
 const registerFieldsExist = function (incomingUser, userFields) {
 	let throwErr = false;
@@ -224,19 +274,40 @@ const loginFieldsExist = function (incomingUser, loginFields) {
 		throw errors;
 }
 
-const gender = ['male', 'female'];
-const sexualpreferences = ['str', 'bi', 'h'];
+const fieldsExist = function (toVerify, fieldsRequired) {
+	let throwErr = false;
+	let errors = {};
+
+	if (typeof toVerify === 'undefined' || toVerify === null)
+		throw new Error('data is undefined.');
+	for (const key in fieldsRequired) {
+		fieldsRequired[key] = toVerify[key];
+	}
+	for (let key in fieldsRequired) {
+		if (typeof fieldsRequired[key] === 'undefined' || fieldsRequired[key] === null) {
+			errors[key] = `field required.`;
+			throwErr = true;
+		}
+	}
+	if (throwErr === true)
+		throw errors;
+}
 
 module.exports = {
-    username:			validateUsername,
-    password:			validatePassword,
-	email:				validateEmail,
-	age:				validateAge,
-	birthdate:			validateBirthDate,
-	user:				validateUser,
+    username:				validateUsername,
+    password:				validatePassword,
+	email:					validateEmail,
+	age:					validateAge,
+	birthdate:				validateBirthDate,
+	user:					validateUser,
+	gender:					validateGender,
+	sexpref:				validateSexpref,
+	bio:					validateBio,
 	registerFieldsExist:	registerFieldsExist,
-	calculateAge:		calculateAge,
-	isValidDate:		isValidDate,
-	loginFieldsExist:	loginFieldsExist,
-	validateUserInfo:	validateUserInfo,
+	calculateAge:			calculateAge,
+	isValidDate:			isValidDate,
+	loginFieldsExist:		loginFieldsExist,
+	fieldsExist:			fieldsExist,
+	// validateUserInfo:		validateUserInfo,
+	setup: 					validateSetup,
 }

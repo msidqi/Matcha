@@ -1,11 +1,11 @@
 const init = {
-	conTokken:	'',
+	conToken:	'',
 }
 
 const editTokken = (state = init, action) => {
 	console.log('editTokken reducer');
 	if (action.type === 'EDITTOKKEN')
-		return ({ conTokken: action.conTokken })
+		return ({ conToken: action.conToken })
 	return ({ ...state });
 }
 
