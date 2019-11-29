@@ -3,7 +3,8 @@ const usersM = require('../models/usersM');
 const bcrypt = require('bcryptjs');
 const uuid = require('uuid/v4');
 const auth = require('../middlewares/auth');
-
+const sendMail = require('../helpers/mail');
+const conf = require('../config/config');
 
 //       add/correct user values before registration 
 const userDefaultValues = (user) => {
@@ -13,10 +14,22 @@ const userDefaultValues = (user) => {
     user.sexualpreferences = '';
     user.biography = '';
 	user.pictures = [];
-    user.tokken = '';
+    user.token = uuid() + uuid();
 	user.conToken = '';
+	user.verified = false;
 	user.completed = false;
 };
+
+const sendVerificationEmail = (email, username, uuid, token) => {
+	console.log(conf.viewUrl);
+	// const link = `<a target="_blank" href="${conf.apiReq}://${conf.hostname}:${conf.port}${conf.baseUrl}/verification/${uuid}/${token}">here</a>`
+	const link = `<a target="_blank" href="${conf.viewUrl}/verification/${uuid}/${token}">here</a>`
+	sendMail(email, 'Matcha Verification', `
+	Hello there ${username} !
+
+	We know you're in a hurry so we sent you this email to verify your email through ${link}.
+	`);
+}
 
 const createUser = async (req, res) => {
     try {
@@ -27,7 +40,31 @@ const createUser = async (req, res) => {
         await usersM.userExists(null, user.username, user.email);
         user.password = await bcrypt.hash(user.password, 10);
 		let uuid = await usersM.storeUser(user);
+		sendVerificationEmail(user.email, user.username, user.uuid, user.token);
         res.status(201).json({uuid: uuid});	// return uuid on success
+    }
+    catch (err) {
+		console.log(err);
+		if (typeof err.message === 'string')
+			res.status(422).json({ error: err.message });
+		else
+			res.status(400).json({ errors: err });
+    }
+}
+
+const verifyUserEmail = async (req, res) => {
+    try {
+		let uuid = req.params.id;
+		let token = req.params.token;
+		let user = await usersM.loadBy('uuid', uuid);
+		if (user.verified === true)
+	        res.status(201).json({msg: 'user verified.',  status: "OK"});
+		else {
+			if (user.token !== token)
+				throw new Error('Invalid token.');
+			await usersM.changeVerify(uuid);
+			res.status(201).json({msg: 'user is now verified.', status: "OK"});
+		}
     }
     catch (err) {
 		console.log(err);
@@ -81,7 +118,7 @@ const logoutUser = async (req, res) => {
 const getUserById = async (req, res) => {
     try {
         let user = await usersM.loadById(req.params.id);
-	    delete user.tokken;										// delete secret fields
+	    delete user.token;										// delete secret fields
 	    delete user.conToken;
 		delete user.password;
 		delete user.email;
@@ -99,7 +136,7 @@ const getUsersAll = async (req, res) => {
 		var arr = [];
 		result.records.forEach(record => {
 		  delete record.get('n').properties.conToken;	// delete secret fields
-		  delete record.get('n').properties.tokken;
+		  delete record.get('n').properties.token;
 		  delete record.get('n').properties.password;
 		  delete record.get('n').properties.email;
 		  arr.push(record.get('n').properties);
@@ -135,12 +172,13 @@ const editUser = async (req, res) => {
 }
 
 module.exports = {
-	create:     createUser,
-	getAll:		getUsersAll,
-	getById:    getUserById,
-	login:		loginUser,
-	logout:		logoutUser,
-	edit:		editUser,
+	verify:				verifyUserEmail,
+	create:     		createUser,
+	getAll:				getUsersAll,
+	getById:    		getUserById,
+	login:				loginUser,
+	logout:				logoutUser,
+	edit:				editUser,
 }
 
 //deleteUser

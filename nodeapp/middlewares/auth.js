@@ -22,7 +22,6 @@ const verifyConnection = (conToken) => {
 	let ret;
 	let public_key;
 	let options;
-	console.log('Msidqi321@gmail.com');
 
 	options = { algorithms: ['RS256'] };
 	public_key = fs.readFileSync(__dirname + '/keys.pem.pub').toString();
@@ -38,7 +37,7 @@ const verifyConnection = (conToken) => {
 
 const middleware = (req, res, next) => {
 	let conToken = req.cookies.conToken;
-	console.log('Msidqi321@gmail.com ', conToken);
+	// console.log('Msidqi321@gmail.com', conToken);
 
 	if (!conToken || !(req.verifiedUser = verifyConnection(conToken)))
 		throw new Error('Invalid or missing token.');

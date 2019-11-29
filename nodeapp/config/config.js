@@ -1,8 +1,14 @@
-const config = {
+const conf = {
+    apiReq:        'http',
     apiVer:     'v1',
     hostname:   'localhost',
     port:       3001,
+    
+    viewDomainName:    'localhost',
+    viewPort:          3000,
+    viewReq:        'http',
 };
-config.baseUrl= `/api/${config.apiVer}`;
+conf.baseUrl= `/api/${conf.apiVer}`;
+conf.viewUrl = `${conf.viewReq}://${conf.viewDomainName}:${conf.viewPort}`;
 
-module.exports = config;
+module.exports = conf;

@@ -18,7 +18,8 @@ Router.post('/session/', usersC.login);
 
 Router.delete('/session/', auth.middleware, usersC.logout);
 
-
+Router.post('/verification/:id/:token', usersC.verify);
+// Router.patch('/users/:id/', usersC.verify);
 
 
 

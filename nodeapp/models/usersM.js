@@ -16,7 +16,7 @@ const storeUser = async (user) => {
 		biography:{biography},
 		pictures:{pictures},
 		uuid:{uuid},
-		tokken:{tokken},
+		token:{token},
 		conToken:{conToken}}) RETURN n`;
 	const params = user;
 	let result = await db.query(cypher, params);
@@ -54,6 +54,14 @@ const loadUsersAll =  async () => {
   return await db.query(cypher);
 }
 
+const changeVerify =  async (uuid) => {
+	let cypher = "MATCH (n:user {uuid: {uuid}}) SET n.verified = true, n.token = '' RETURN n.verified";
+	const params = {uuid: uuid};
+
+	let result = await db.query(cypher, params);
+	console.log(result);
+}
+ 
 const userExists = async (uuid, username, email) => { // by uuid or username && email
   let cypher = (username && email)? `MATCH (n:user)
   WHERE n.email = {email} OR n.username = {username} RETURN n` : `MATCH (n:user)
@@ -136,4 +144,5 @@ module.exports = {
   storeJWT:			storeJWT,
   deleteJWT:		deleteJWT,
   setupFields: 		setupFields,
+  changeVerify:		changeVerify,
 };

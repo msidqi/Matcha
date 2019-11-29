@@ -4,6 +4,7 @@ import Register from '../Views/Register';
 import Home from '../Views/Home';
 import Users from '../Views/Users';
 import Profile from '../Views/Profile';
+import VerifiedPage from '../Views/VerifiedPage';
 import NavB from './navbar';
 import {
     BrowserRouter as Router,
@@ -23,7 +24,8 @@ export default function Routes() {
                 <Route path="/login" component={Login} />
                 <Route path="/home" component={Home} />
                 <Route path="/register" component={Register} />
-                <Route path="/" exact component={Home} />
+                <Route path="/verification/:id/:token" exact component={VerifiedPage} />
+                <Route path="/" component={Home} />
             </Switch>
         </Router>
     )
