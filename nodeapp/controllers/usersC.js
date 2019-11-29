@@ -5,6 +5,7 @@ const uuid = require('uuid/v4');
 const auth = require('../middlewares/auth');
 const sendMail = require('../helpers/mail');
 const conf = require('../config/config');
+const { handleError } = require('../helpers/errorHandler');
 
 //       add/correct user values before registration 
 const userDefaultValues = (user) => {
@@ -22,16 +23,15 @@ const userDefaultValues = (user) => {
 
 const sendVerificationEmail = (email, username, uuid, token) => {
 	console.log(conf.viewUrl);
-	// const link = `<a target="_blank" href="${conf.apiReq}://${conf.hostname}:${conf.port}${conf.baseUrl}/verification/${uuid}/${token}">here</a>`
-	const link = `<a target="_blank" href="${conf.viewUrl}/verification/${uuid}/${token}">here</a>`
+	const link = `<a target="_blank" href="${conf.viewUrl}/verification/${uuid}/${token}">here</a>`;
 	sendMail(email, 'Matcha Verification', `
 	Hello there ${username} !
 
-	We know you're in a hurry so we sent you this email to verify your email through ${link}.
+	Please verify your email through ${link}.
 	`);
 }
 
-const createUser = async (req, res) => {
+const createUser = async (req, res, next) => {
     try {
         let user = req.body;
 		validator.fieldsExist(user, usersM.registerFields()); // check if user has the required keys to register
@@ -44,15 +44,26 @@ const createUser = async (req, res) => {
         res.status(201).json({uuid: uuid});	// return uuid on success
     }
     catch (err) {
-		console.log(err);
-		if (typeof err.message === 'string')
-			res.status(422).json({ error: err.message });
+		next(handleError(422, err));
+    }
+}
+//f40ad3aa-1287-451b-9a1f-7bd92cb144d1
+const isVerifiedUser = async (req, res, next) => {
+    try {
+		let uuid = req.params.id;
+		let user = await usersM.loadBy('uuid', uuid);
+		req.body.user = user;
+		if (user.verified === true)
+	        next();
 		else
-			res.status(400).json({ errors: err });
+			throw new Error('Account not verified.');
+    }
+    catch (err) {
+		next(handleError(422, err));
     }
 }
 
-const verifyUserEmail = async (req, res) => {
+const verifyUserEmail = async (req, res, next) => {
     try {
 		let uuid = req.params.id;
 		let token = req.params.token;
@@ -62,20 +73,16 @@ const verifyUserEmail = async (req, res) => {
 		else {
 			if (user.token !== token)
 				throw new Error('Invalid token.');
-			await usersM.changeVerify(uuid);
+			await usersM.updateVerify(uuid);
 			res.status(201).json({msg: 'user is now verified.', status: "OK"});
 		}
     }
     catch (err) {
-		console.log(err);
-		if (typeof err.message === 'string')
-			res.status(422).json({ error: err.message });
-		else
-			res.status(400).json({ errors: err });
+		next(handleError(422, err));
     }
 }
 
-const loginUser = async (req, res) => {
+const loginUser = async (req, res, next) => {
 	try {
 		let user = req.body;
 		let err = "";
@@ -92,30 +99,22 @@ const loginUser = async (req, res) => {
 		res.status(200).json( { msg: 'user has logged in', uuid: userdb.uuid } );	// TODO: send JSON web token
 	}
 	catch (err) {
-		console.log(err);
-		if (typeof err.message === 'string')
-			res.status(422).json({ error: err.message });
-		else
-			res.status(400).json({ errors: err });
+		next(handleError(422, err));
 	}
 }
 
-const logoutUser = async (req, res) => {
+const logoutUser = async (req, res, next) => {
 	try {
 		auth.deleteConnection(res);
 		console.log('loggetout by server.');
 		res.status(200).json({ msg: 'user has logged out.' });
 	}
 	catch (err) {
-		console.log(err);
-		if (typeof err.message === 'string')
-			res.status(422).json({ error: err.message });
-		else
-			res.status(400).json({ errors: err });
+		next(handleError(422, err));
 	}
 }
 
-const getUserById = async (req, res) => {
+const getUserById = async (req, res, next) => {
     try {
         let user = await usersM.loadById(req.params.id);
 	    delete user.token;										// delete secret fields
@@ -126,53 +125,65 @@ const getUserById = async (req, res) => {
         res.status(200).json(user);
     }
     catch (err) {
-        res.status(422).json({error: err.message});
+        next(handleError(422, err));
     }
 }
 
-const getUsersAll = async (req, res) => {
+const getUsersAll = async (req, res, next) => {
 	try {
 		let result = await usersM.loadAll();
 		var arr = [];
 		result.records.forEach(record => {
-		  delete record.get('n').properties.conToken;	// delete secret fields
-		  delete record.get('n').properties.token;
-		  delete record.get('n').properties.password;
-		  delete record.get('n').properties.email;
-		  arr.push(record.get('n').properties);
+			let user = record.get('n').properties;
+		  	delete user.conToken;	// delete secret fields
+		  	delete user.token;
+		  	delete user.password;
+		  	delete user.email;
+		  	arr.push(user);
 		});
 		res.status(200).json(arr);
 	  }
 	  catch (err) {
-		res.status(501).json(err);
+		next(handleError(501, err));
 	  }
 }
 
-const editUser = async (req, res) => {
+const editUser = async (req, res, next) => {
 	try {
-		const id = req.params.id
-		const result = await usersM.loadById(id)
+		const user = req.body.user;
+		let userUpdate = {};
 
-		////if conmpleted false
-		if(result.records.get('n').properties.completed === false) {
-			// valid first time setup data
-			const userUpdate = req.body
-			validator.fieldsExist(userUpdate, usersM.setupFields());
-			validator.setup(userUpdate);
-			userUpdate.bio = userUpdate.bio.trim();
-			// patch usersM with new data
-			// const update = usersM.setupUser()
+		let updateable = usersM.updateableFields();
+		for (const key in updateable) {
+		if (updateable.hasOwnProperty(key) && req.body[key]) {
+				userUpdate[key] = req.body[key];
+			}
 		}
-		res.status(200).send({msg: "user Updated", status: "OK"})
+		////if conmpleted false
+		if(user.completed === false) {
+			// valid first time setup data
+			console.log('modified.');
+				validator.fieldsExist(userUpdate, usersM.setupFields());
+				validator.setup(userUpdate);
+				userUpdate.bio = userUpdate.bio.trim();
+			// patch usersM with new data
+			const update = usersM.updateUser()
+		}
+		else {
+			const update = usersM.updateUser(user.uuid , userUpdate)
+			console.log('heeewwe');
+
+		}
+		res.status(200).send({msg: "user updated", status: "OK"});
 	}
 	catch (err) {
-		console.log(err);
-		res.status(400).send(err)
+		next(handleError(422, err));
 	}
 }
 
 module.exports = {
 	verify:				verifyUserEmail,
+	isVerified:			isVerifiedUser,
 	create:     		createUser,
 	getAll:				getUsersAll,
 	getById:    		getUserById,

@@ -201,6 +201,7 @@ const validateSetup = (user) =>{
 		errors.sexprefError = err;
 	if ((err = validateBio(user.bio)) !== "")
 		errors.bioError = err;
+	console.log('here');
 	for (let key in errors) {
 		if (errors[key] !== "")
 			throw errors;
@@ -236,44 +237,6 @@ const validateSetup = (user) =>{
 // 	}
 // }
 
-const registerFieldsExist = function (incomingUser, userFields) {
-	let throwErr = false;
-	let errors = {};
-
-	if (typeof incomingUser === 'undefined' || incomingUser === null)
-		throw {error: 'user is undefined.'};
-	for (const key in userFields) {
-		userFields[key] = incomingUser[key];
-	}
-	for (let key in userFields) {
-		if (typeof userFields[key] === 'undefined' || userFields[key] === null) {
-			errors[key] = `field required.`;
-			throwErr = true;
-		}
-	}
-	if (throwErr === true)
-		throw errors;
-}
-
-const loginFieldsExist = function (incomingUser, loginFields) {
-	let throwErr = false;
-	let errors = {};
-
-	if (typeof incomingUser === 'undefined' || incomingUser === null)
-		throw {error: 'user is undefined.'};
-	for (const key in loginFields) {
-		loginFields[key] = incomingUser[key];
-	}
-	for (let key in loginFields) {
-		if (typeof loginFields[key] === 'undefined' || loginFields[key] === null) {
-			errors[key] = `field required.`;
-			throwErr = true;
-		}
-	}
-	if (throwErr === true)
-		throw errors;
-}
-
 const fieldsExist = function (toVerify, fieldsRequired) {
 	let throwErr = false;
 	let errors = {};
@@ -303,10 +266,8 @@ module.exports = {
 	gender:					validateGender,
 	sexpref:				validateSexpref,
 	bio:					validateBio,
-	registerFieldsExist:	registerFieldsExist,
 	calculateAge:			calculateAge,
 	isValidDate:			isValidDate,
-	loginFieldsExist:		loginFieldsExist,
 	fieldsExist:			fieldsExist,
 	// validateUserInfo:		validateUserInfo,
 	setup: 					validateSetup,

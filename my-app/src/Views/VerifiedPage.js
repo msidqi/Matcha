@@ -9,7 +9,27 @@ import ls from 'local-storage';
 const useStyles = makeStyles(theme => ({
     continue: {
         margin: theme.spacing(3, 0, 2),
+        // justifyContent: 'center',
+        textAlign:  'center',
       },
+    button: {
+        height: '100%',
+        width: '100%',
+        color: 'white',
+        background: "#3f51b5",
+        borderRadius: '5px',
+        '&:hover': {
+            background: "#5e6cb5",
+        },
+    },
+    info: {
+        textAlign:  'center',
+        height: '400px',
+    },
+    banner: {
+        background: '#b30000',
+        height: '50px'
+    },
 }));
 
 function VerifiedPage(props) {
@@ -46,18 +66,25 @@ function VerifiedPage(props) {
 
     return (
       <Container className={ 'card-1'} maxWidth='sm'>
-        {(toNext || connected) && <Redirect to="/home"/>}
+        {toNext && <Redirect to="/profile/edit"/>}
+        {connected && <Redirect to="/home"/>}
             <Grid container spacing={0}>
-                  <Grid>
+                <Grid item xs={12} className={classes.banner}>
+                    
+                </Grid>
+                <Grid item xs={12} className={classes.info}>
+                    <h4>You account is now verified!</h4>
+                </Grid>
+                <Grid item xs={12} className={classes.continue}>
                     <Button
+                        className={classes.button}
                         onClick={ redirect }
                         type="submit"
                         color="primary"
-                        className={classes.continue}
                         >
                         Continue
                     </Button>
-                  </Grid>
+                </Grid>
             </Grid>
       </Container>
     );

@@ -12,14 +12,13 @@ Router.get('/users/:id', usersC.getById);
 
 Router.post('/users/', usersC.create);
 
-Router.patch('/users/:id', usersC.edit);
+Router.patch('/users/:id', auth.middleware, usersC.isVerified, usersC.edit);
 
 Router.post('/session/', usersC.login);
 
 Router.delete('/session/', auth.middleware, usersC.logout);
 
 Router.post('/verification/:id/:token', usersC.verify);
-// Router.patch('/users/:id/', usersC.verify);
 
 
 
@@ -51,8 +50,6 @@ Router.get('/', (req, res) => {
     <h4>see available urls through <a target=_blank href="${conf.hostname}:${conf.port}${conf.baseUrl}/routes/">${conf.baseUrl}/routes/</a></h4>`;
     res.status(200).send(text);
 });
-
-Router.use((req, res) => res.status(404).json({msg: '404 router : Resource not found.'}));
 
 module.exports = {
     Router : Router,

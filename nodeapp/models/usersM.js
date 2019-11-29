@@ -38,11 +38,11 @@ const storeJWT = async (uuid, JWT) => {
 }
 
 const deleteJWT = async (uuid) => {
-	const cypher = `MATCH (n:user) 
+	let cypher = `MATCH (n:user) 
 		WHERE n.uuid = {uuid}
 		SET n.conToken = {conToken}
 		RETURN n`;
-   const params = {uuid: uuid, conToken: ''};
+   let params = {uuid: uuid, conToken: ''};
    let result = await db.query(cypher, params);
    if (result.records.length === 0)
 	   throw new Error ('Could not delete conToken.');
@@ -54,9 +54,30 @@ const loadUsersAll =  async () => {
   return await db.query(cypher);
 }
 
-const changeVerify =  async (uuid) => {
+const updateVerify =  async (uuid) => {
 	let cypher = "MATCH (n:user {uuid: {uuid}}) SET n.verified = true, n.token = '' RETURN n.verified";
-	const params = {uuid: uuid};
+	let params = {uuid: uuid};
+
+	let result = await db.query(cypher, params);
+	console.log(result);
+}
+
+const updateUser =  async (uuid, userUpdates) => {
+	let set = '';
+	let first = true;
+
+	for (const key in userUpdates) {
+		if (userUpdates.hasOwnProperty(key)) {
+			if (first) {
+				set += `n.${key} = '${userUpdates[key]}' `;///////// NOTICE: add query depending on type of variable;
+				first = false;
+			}
+			else
+				set += `, n.${key} = '${userUpdates[key]}' `;
+		}
+	}
+	let cypher = `MATCH (n:user {uuid: {uuid}}) SET ${set} RETURN n`;
+	let params = {uuid: uuid, ...userUpdates};
 
 	let result = await db.query(cypher, params);
 	console.log(result);
@@ -98,6 +119,7 @@ const loadUserById = async (uuid) => {
 
 const loadUserBy = async (key, val) => {
 	let cypher = `MATCH (n:user) WHERE n.${key} = {${key}} RETURN n`;
+	// console.log(cypher);
     let params = {[`${key}`]: val};
 	let result = await db.query(cypher, params);
     if (result.records.length === 0)
@@ -133,6 +155,22 @@ const setupFields = () => {
 	};
 }
 
+const updateableFields = () => {
+	return {
+			username: null,
+			firstname: null,
+			lastname: null,
+			// email: null,
+			birthdateShort: null,
+			password: null,
+			gender: null,
+			sexpref: null,
+			tags: null,
+			bio: null,
+			pictures: null,
+	};
+}
+
 module.exports = {
   loadAll:			loadUsersAll,
   storeUser:		storeUser,
@@ -144,5 +182,7 @@ module.exports = {
   storeJWT:			storeJWT,
   deleteJWT:		deleteJWT,
   setupFields: 		setupFields,
-  changeVerify:		changeVerify,
+  updateVerify:		updateVerify,
+  updateUser:		updateUser,
+  updateableFields:	updateableFields,
 };

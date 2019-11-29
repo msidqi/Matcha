@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
-var fs = require('fs');
+const fs = require('fs');
+const { handleError } = require('../helpers/errorHandler');
 
 const createConnection = (res, uuid, username, email) => {
 	let private_key;
@@ -11,7 +12,7 @@ const createConnection = (res, uuid, username, email) => {
 	options = { algorithm: 'RS256' };
 	private_key= fs.readFileSync(__dirname + '/keys.pem').toString();
 	conToken = jwt.sign(payload, private_key, options);
-	res.cookie('conToken', conToken, { expires: new Date(Date.now() + 900000), httpOnly: true });
+	res.cookie('conToken', conToken, { expires: new Date(Date.now() + 5000000), httpOnly: true });
 }
 
 const deleteConnection = (res) => {
@@ -40,10 +41,10 @@ const middleware = (req, res, next) => {
 	// console.log('Msidqi321@gmail.com', conToken);
 
 	if (!conToken || !(req.verifiedUser = verifyConnection(conToken)))
-		throw new Error('Invalid or missing token.');
+		next(handleError(400, 'Invalid or missing token.'));
 	next();
 }
-
+//users/f40ad3aa-1287-451b-9a1f-7bd92cb144d1
 module.exports = {
 	createConnection:		createConnection,
 	verifyConnection:		verifyConnection,

@@ -9,6 +9,7 @@ const app = express();
 const cors = require('cors');
 const routes = require('./routes');
 const cookieParse = require('cookie-parser');
+const { errorMiddleware } = require('./helpers/errorHandler');
 
 // change request going to /api to another server/port
 // var proxy = require('http-proxy-middleware');
@@ -26,12 +27,7 @@ app.use(conf.baseUrl, routes.Router);
 app.use((req, res) => res.status(404).json({msg: '404 app : Resource not found.'}));
 
 // catching middlewares errors
-app.use((err, req, res, next) => {
-  if (typeof err.message === 'string')
-    res.status(432).json({ error: err.message });
-else
-    res.status(400).json({ errors: err });
-});
+app.use( errorMiddleware );
 
 
 app.listen(port, (err) => {
