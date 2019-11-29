@@ -184,7 +184,7 @@ const validateUser = function (user) {
 	if ((err = validateConfirmPassword(user.confirmpassword, user.password)) !== "")
 		errors.confirmpasswordError = err;
 	if ((err = validateBirthDate(user.birthdateShort)) !== "")
-		errors.birthdateError = err;
+		errors.birthdateShortError = err;
 	for (let key in errors) {
 		if (errors[key] !== "")
 			throw errors;

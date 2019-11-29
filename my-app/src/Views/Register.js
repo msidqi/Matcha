@@ -1,132 +1,139 @@
-import React from 'react';
-import { makeStyles, Container, Grid } from '@material-ui/core';
-import { useSelector, useDispatch } from 'react-redux';
-import { saveRegister } from '../reduxx/actions/save';
+import React, { useState } from 'react';
+import { Container, Grid } from '@material-ui/core';
+// import { useSelector, useDispatch } from 'react-redux';
+// import { saveRegister } from '../reduxx/actions/save';
+import BirthDate from '../components/BirthDate';
 import UserInput from '../components/UserInput';
 import Submit from '../components/Submit';
-import BirthDate from '../components/BirthDate';
 import conf from '../config/config';
 import axios from 'axios';
+import { Redirect } from 'react-router-dom';
+import ls from 'local-storage';
 
-//css
-const useStyles = makeStyles(theme => ({
-  container: {
-    backgroundColor: 'white',
-  },
-}));
 
 function Register() {
 
-    // css
-    const classes = useStyles();
-    // redux state management
-    const data = useSelector(state => state.register);
-    const dispatch = useDispatch();
-
-    const handleEventChange = (event, obj = null) => {
-        dispatch(saveRegister({...data, [event.target.name]:event.target.value}));
-    }
-
-    const handleChange = (obj) => {
-      dispatch(saveRegister({...data, ...obj}));
-    }
-    const handleDateChange = (date) => {
-      dispatch(saveRegister({...data, birthdate: date, birthdateShort: date.toLocaleDateString('fr-MA')}));
-    }
-
-    const registerUser = (event) => {
-      event.preventDefault();
-      // console.log(data);
-      const sendData = async () => {
-        try {
-          let result = await axios.post(`${conf.apiUrl}/users`, data);
-          // console.log('success');
-          // console.log(result.data);
-          const reset = {
+    const connected = ls.get('connected');
+    const init = {
 			username: '',
 			firstname: '',
 			lastname: '',
 			email: '',
-			birthdate: '',
-			birthdateShort: '',
+			birthdate: new Date(),
+      birthdateShort: new Date().toLocaleDateString('fr-MA'),
 			password: '',
-            usernameError: '',
-            firstnameError: '',
-            lastnameError: '',
-            emailError: '',
-            birthdateError: '',
-            passwordError: '',
-          };
-          handleChange(reset);
+			confirmpassword: '',
+      usernameError: '',
+      firstnameError: '',
+      lastnameError: '',
+      emailError: '',
+      birthdateShortError: '',
+      passwordError: '',
+      confirmpasswordError: '',
+    };
+    const [Register, setRegister] = useState(init)
+
+    const handleEventChange = (event) => {
+      setRegister({...Register, [event.target.name]:event.target.value});
+    }
+
+    const handleChange = (obj) => {
+      setRegister({...Register, ...obj});
+    }
+
+    const handleDateChange = (date) => {
+      setRegister({...Register, birthdate: date, birthdateShort: date.toLocaleDateString('fr-MA')});
+    }
+
+    const [toNext, settoNext] = useState(false);
+
+    const sendData = async () => {
+      try {
+        await axios.post(`/api/${conf.apiVer}/users`, Register);
+        settoNext(true);
+      }
+      catch (e) {
+        if (e.response.data.errors) {
+          const errors = {
+            usernameError: e.response.data.errors.usernameError,
+            firstnameError: e.response.data.errors.firstnameError,
+            lastnameError: e.response.data.errors.lastnameError,
+            emailError: e.response.data.errors.emailError,
+            birthdateShortError: e.response.data.errors.birthdateShortError,
+            passwordError: e.response.data.errors.passwordError,
+            confirmpasswordError: e.response.data.errors.confirmpasswordError,
+          }
+        handleChange(errors);
         }
-        catch (e) {
-          if (e.response.data.errors) {
-            const errors = {
-              usernameError: e.response.data.errors.usernameError,
-              firstnameError: e.response.data.errors.firstnameError,
-              lastnameError: e.response.data.errors.lastnameError,
-              emailError: e.response.data.errors.emailError,
-              birthdateError: e.response.data.errors.birthdateError,
-              passwordError: e.response.data.errors.passwordError,
-            };
-            handleChange(errors);
-			    }
-        }
-	    }
+      }
+    }
+
+    const registerUser = (event) => {
+      event.preventDefault();
 	    sendData();
     }
 
     return (
-      <Container className={classes.container} maxWidth='sm'>
+      <Container className={ 'card-1'} maxWidth='sm'>
+        {(toNext || connected) && <Redirect to="/login"/>}
           <form  onSubmit={ registerUser } autoComplete="off" noValidate>
             <Grid container spacing={0}>
                   <Grid item xs={12}>
                     <UserInput
                       label={ 'username' }
-                      val={ data.username }
+                      val={ Register.username }
                       func={ handleEventChange }
-                      helperText={ data.usernameError }
+                      helperText={ Register.usernameError }
                     />
                   </Grid>
                   <Grid item xs={12}>
                     <UserInput
                       label={ 'firstname' }
-                      val={ data.firstname }
+                      val={ Register.firstname }
                       func={ handleEventChange }
-                      helperText={ data.firstnameError }
+                      helperText={ Register.firstnameError }
                       />
                   </Grid>
                   <Grid item xs={12}>
                       <UserInput
                       label={ 'lastname' }
-                      val={ data.lastname }
+                      val={ Register.lastname }
                       func={ handleEventChange }
-                      helperText={ data.lastnameError }
+                      helperText={ Register.lastnameError }
                       />
                   </Grid>
                   <Grid item xs={12}>
                       <UserInput
                       label={ 'email' }
-                      val={ data.email }
+                      val={ Register.email }
                       func={ handleEventChange }
-                      helperText={ data.emailError }
+                      helperText={ Register.emailError }
                       type="email"
                       />
                   </Grid>
                   <Grid item xs={12}>
                       <UserInput
                       label={ 'password' }
-                      val={ data.password }
+                      val={ Register.password }
                       func={ handleEventChange }
-                      helperText={ data.passwordError }
+                      helperText={ Register.passwordError }
+                      type="password"
+                      />
+                  </Grid>
+                  <Grid item xs={12}>
+                      <UserInput
+                      label={ 'confirmpassword' }
+                      val={ Register.confirmpassword }
+                      func={ handleEventChange }
+                      helperText={ Register.confirmpasswordError }
                       type="password"
                       />
                   </Grid>
                   <Grid item xs={12}>
                       <BirthDate 
-                        val={ data.birthdate }
+                        val={ Register.birthdate }
                         func={ handleDateChange }
-                        helperText={ data.birthdateError }
+                        helperText={ Register.birthdateShortError }
                       />
                   </Grid>
                   <Grid>

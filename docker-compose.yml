@@ -15,7 +15,7 @@ services:
         links:
             - "database:database"
         tty: true
-        restart : always
+        # restart : always
 
     react-server:
         build:
@@ -31,7 +31,7 @@ services:
         volumes:
             - .:/app
         tty: true
-        restart : always
+        # restart : always
 
     database:
         container_name: 'db'

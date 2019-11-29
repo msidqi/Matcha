@@ -47,12 +47,12 @@ const loginUser = async (req, res) => {
 		if (err = validator.email(user.email))					//	validate email
 			throw { emailError: err };
 		let userdb = await usersM.loadBy('email', user.email);	// load user by email if it exists, else throw err
-		if (user.password == "" || !user.password || !await bcrypt.compare(user.password, userdb.password) || userdb.uuid !== req.params.id)
+		if (user.password == "" || !user.password || !await bcrypt.compare(user.password, userdb.password))// || userdb.uuid !== req.params.id)
 			throw { passwordError: 'Incorrect password.'};
 
-		const JWT = auth.createConnection(res, userdb.uuid);
-		// await usersM.storeJWT(userdb.uuid, JWT);
-		res.status(200).json( { msg: 'logged in', uuid: userdb.uuid } );	// TODO: send JSON web token
+		auth.createConnection(res, userdb.uuid, userdb.username, userdb.email);
+		console.log('logged in by server.');
+		res.status(200).json( { msg: 'user has logged in', uuid: userdb.uuid } );	// TODO: send JSON web token
 	}
 	catch (err) {
 		console.log(err);
@@ -65,10 +65,9 @@ const loginUser = async (req, res) => {
 
 const logoutUser = async (req, res) => {
 	try {
-		let user = req.body;
-
 		auth.deleteConnection(res);
-		res.status(200).json( { msg: 'user has logged out.' } );
+		console.log('loggetout by server.');
+		res.status(200).json({ msg: 'user has logged out.' });
 	}
 	catch (err) {
 		console.log(err);

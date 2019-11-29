@@ -1,83 +1,89 @@
-import React from 'react';
-import { makeStyles, Container, Grid } from '@material-ui/core';
+import React, { useState } from 'react';
+import { Container, Grid } from '@material-ui/core';
 import { useSelector, useDispatch } from 'react-redux';
-import { saveLogin } from '../reduxx/actions/save';
-// import { editToken } from '../reduxx/actions/editToken';
+import { saveUser } from '../reduxx/actions/save';
 import UserInput from '../components/UserInput';
 import Submit from '../components/Submit';
 import conf from '../config/config';
 import axios from 'axios';
-
-//css
-const useStyles = makeStyles(theme => ({
-  container: {
-    backgroundColor: 'white',
-  },
-}));
+import { Redirect } from 'react-router-dom';
+import ls from 'local-storage';
 
 function Login() {
 
-    // css
-    const classes = useStyles();
-    // redux state management
-    const data = useSelector(state => state.login);
+  // localStorage.getItem()
+  // localStorage.removeItem()
+  // localStorage.setItem();
+
+
+    // connection state
+
+    const init = {
+      email: '',
+      password: '',
+      emailError: '',
+      passwordError: '',
+    };
+    const [Login, setLogin] = useState(init);
+    const [toNext, settoNext] = useState(false);
+    const connected = ls.get('connected');
+    var con = useSelector(state => state.Connection);
+    
     const dispatch = useDispatch();
 
     const handleEventChange = (event, obj = null) => {
-        dispatch(saveLogin({...data, [event.target.name]:event.target.value}));
+      setLogin({...Login, [event.target.name]:event.target.value});
     }
 
     const handleChange = (obj) => {
-      dispatch(saveLogin({...data, ...obj}));
+      setLogin({...Login, ...obj});
+    }
+
+    const sendData = async () => {
+      try {
+        let result = await axios.post(`/api/${conf.apiVer}/session/`, Login);
+        ls.set('connected', true);
+        ls.set('uuid', result.data.uuid);
+        ls.set('email', Login.email);
+        dispatch(saveUser({uuid: result.data.uuid, email: Login.email, connected: true}));
+        settoNext(true);
+      }
+      catch (e) {
+        if (e.response && e.response.data.errors) {
+          const errors = {
+            emailError: e.response.data.errors.emailError,
+            passwordError: e.response.data.errors.passwordError,
+          };
+          handleChange(errors);
+        }
+      }
     }
 
     const loginUser = (event) => {
       event.preventDefault();
-      console.log(data);
-      const sendData = async () => {
-        try {
-          let result = await axios.post(`${conf.apiUrl}/session/`, data);
-          console.log('success');
-          console.log(result.data);
-          const errors = {
-            emailError: '',
-            passwordError: '',
-          };
-		  handleChange(errors);
-		//   dispatch(editToken(result.data));
-        }
-        catch (e) {
-          if (e.response.data.errors) {
-            const errors = {
-              emailError: e.response.data.errors.emailError,
-              passwordError: e.response.data.errors.passwordError,
-            };
-            handleChange(errors);
-			    }
-        }
-	    }
 	    sendData();
     }
 
     return (
-      <Container className={classes.container} maxWidth='sm'>
+      <Container className={ 'card-1' } maxWidth='sm'>
+        {(toNext || connected) && <Redirect to={'/'} />}
           <form  onSubmit={ loginUser } autoComplete="off" noValidate>
             <Grid container spacing={0}>
                   <Grid item xs={12}>
                       <UserInput
                       label={ 'email' }
-                      val={ data.email }
+                      val={ Login.email }
                       func={ handleEventChange }
-                      helperText={ data.emailError }
+                      helperText={ Login.emailError }
                       type="email"
                       />
                   </Grid>
                   <Grid item xs={12}>
                       <UserInput
                       label={ 'password' }
-                      val={ data.password }
+                      val={ Login.password }
                       func={ handleEventChange }
-                      helperText={ data.passwordError }
+                      helperText={ Login.passwordError }
                       type="password"
                       />
                   </Grid>

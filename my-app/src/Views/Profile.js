@@ -8,7 +8,7 @@ const Profile = ( { match } ) => {
 
     const fetchUser = async () => {
         try {
-            const data = await fetch(`${conf.apiUrl}/users/${match.params.id}`);
+            const data = await fetch(`/api/${conf.apiVer}/users/${match.params.id}`);
 			const user = await data.json();
 			console.log('here');
 			// console.log(user);

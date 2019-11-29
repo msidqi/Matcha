@@ -1,6 +1,8 @@
 const express = require('express');
 const Router = express.Router();
 
+const conf = require('./config/config');
+
 const usersC = require('./controllers/usersC');
 const auth = require('./middlewares/auth');
 
@@ -12,23 +14,44 @@ Router.post('/users/', usersC.create);
 
 Router.patch('/users/:id', usersC.edit);
 
-Router.post('/session/:id', usersC.login);
+Router.post('/session/', usersC.login);
 
-// ToDo : authUser middleware
-Router.delete('/session/:id', auth.middleware, usersC.logout);
+Router.delete('/session/', auth.middleware, usersC.logout);
 
 
-Router.get('/', (req, res) => {
-    res.status(200).send('Router : GET');
+
+
+
+
+
+
+
+
+
+Router.get('/routes/', (req, res) => {
+    const apiRoutes = {
+        users: {
+            post: `${conf.baseUrl}/users/`,
+        },
+        session: {
+            post: `${conf.baseUrl}/session/`,
+            delete: `${conf.baseUrl}/session/`,
+        },
+        shops: {
+            get:   `${conf.baseUrl}/shops/`,
+            post:  `${conf.baseUrl}/shops/:id`,
+        },
+    }
+    res.status(200).send(apiRoutes);
 });
 
-Router.post('/', (req, res) => {
-    console.log(req.body);
-    res.status(200).send('Router : POST');
+Router.get('/', (req, res) => {
+    const text = `<h2>Welcome to Matcha api</h2><br>
+    <h4>see available urls through <a target=_blank href="${conf.hostname}:${conf.port}${conf.baseUrl}/routes/">${conf.baseUrl}/routes/</a></h4>`;
+    res.status(200).send(text);
 });
 
 Router.use((req, res) => res.status(404).json({msg: '404 router : Resource not found.'}));
-
 
 module.exports = {
     Router : Router,
