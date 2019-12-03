@@ -37,7 +37,7 @@ function Register() {
       setRegister({...Register, [event.target.name]:event.target.value});
     }
 
-    const handleChange = (obj) => {
+    const handleErrors = (obj) => {
       setRegister({...Register, ...obj});
     }
 
@@ -63,7 +63,7 @@ function Register() {
             passwordError: e.response.data.errors.passwordError,
             confirmpasswordError: e.response.data.errors.confirmpasswordError,
           }
-        handleChange(errors);
+        handleErrors(errors);
         }
       }
     }

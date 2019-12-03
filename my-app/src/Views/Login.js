@@ -11,13 +11,6 @@ import ls from 'local-storage';
 
 function Login() {
 
-  // localStorage.getItem()
-  // localStorage.removeItem()
-  // localStorage.setItem();
-
-
-    // connection state
-
     const init = {
       email: '',
       password: '',
@@ -27,7 +20,8 @@ function Login() {
     const [Login, setLogin] = useState(init);
     const [toNext, settoNext] = useState(false);
     const connected = ls.get('connected');
-    var con = useSelector(state => state.Connection);
+    const completed = ls.get('completed');
+    var con = useSelector(state => state.user.connected);
     
     const dispatch = useDispatch();
 
@@ -42,11 +36,21 @@ function Login() {
     const sendData = async () => {
       try {
         let result = await axios.post(`/api/${conf.apiVer}/session/`, Login);
+        console.log(result.data.completed);
         ls.set('connected', true);
         ls.set('uuid', result.data.uuid);
+        ls.set('completed', result.data.completed);
+        ls.set('verified', result.data.verified);
         ls.set('email', Login.email);
-        dispatch(saveUser({uuid: result.data.uuid, email: Login.email, connected: true}));
-        settoNext(true);
+        ls.set('username', result.data.username);
+        dispatch(saveUser({
+                        uuid: result.data.uuid,
+                        email: Login.email,
+                        connected: true,
+                        verified: result.data.verified,
+                        completed: result.data.completed,
+                        username: result.data.username}));
+        // settoNext(true);
       }
       catch (e) {
         if (e.response && e.response.data.errors) {
@@ -59,14 +63,15 @@ function Login() {
       }
     }
 
-    const loginUser = (event) => {
+    const loginUser = async (event) => {
       event.preventDefault();
-	    sendData();
+	    await sendData();
     }
-
+    console.log(connected, completed);
     return (
       <Container className={ 'card-1' } maxWidth='sm'>
-        {(toNext || connected) && <Redirect to={'/'} />}
+        {(connected && completed === false) && <Redirect to={'/setup'} />}
+        {((toNext || connected) && completed === true) && <Redirect to={'/'} />}
           <form  onSubmit={ loginUser } autoComplete="off" noValidate>
             <Grid container spacing={0}>
                   <Grid item xs={12}>

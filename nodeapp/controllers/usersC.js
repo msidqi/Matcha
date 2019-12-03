@@ -30,10 +30,11 @@ const sendVerificationEmail = (email, username, uuid, token) => {
 	Please verify your email through ${link}.
 	`);
 }
-
+//teboxat599@newmail.top
 const createUser = async (req, res, next) => {
     try {
         let user = req.body;
+		console.log(user);
 		validator.fieldsExist(user, usersM.registerFields()); // check if user has the required keys to register
         validator.user(user);										// validate user object's values
         userDefaultValues(user);									// default values
@@ -48,19 +49,24 @@ const createUser = async (req, res, next) => {
     }
 }
 //f40ad3aa-1287-451b-9a1f-7bd92cb144d1
-const isVerifiedUser = async (req, res, next) => {
+const isVerifiedLoadUser = async (req, res, next) => {
     try {
-		let uuid = req.params.id;
-		let user = await usersM.loadBy('uuid', uuid);
-		req.body.user = user;
-		if (user.verified === true)
+		let uuid = req.connectedUser.uuid;
+		req.dbuser = await usersM.loadBy('uuid', uuid);
+		if (req.dbuser.verified === true)
 	        next();
 		else
-			throw new Error('Account not verified.');
+			throw 'Account not verified.';
     }
     catch (err) {
 		next(handleError(422, err));
     }
+}
+
+const isCompleted = async (req, res, next) => {
+	if (req.dbuser.completed === false)
+		next(handleError(422, 'Account setup not completed.'));
+	next();
 }
 
 const verifyUserEmail = async (req, res, next) => {
@@ -95,8 +101,8 @@ const loginUser = async (req, res, next) => {
 			throw { passwordError: 'Incorrect password.'};
 
 		auth.createConnection(res, userdb.uuid, userdb.username, userdb.email);
-		console.log('logged in by server.');
-		res.status(200).json( { msg: 'user has logged in', uuid: userdb.uuid } );	// TODO: send JSON web token
+		console.log('logged in by server.', userdb);
+		res.status(200).json( { msg: 'user has logged in', uuid: userdb.uuid, verified: userdb.verified, completed: userdb.completed, username: userdb.username } );	// TODO: send JSON web token
 	}
 	catch (err) {
 		next(handleError(422, err));
@@ -150,40 +156,46 @@ const getUsersAll = async (req, res, next) => {
 
 const editUser = async (req, res, next) => {
 	try {
-		const user = req.body.user;
+		const user = req.dbuser;
 		let userUpdate = {};
 
-		let updateable = usersM.updateableFields();
+		console.log('err111');
+		let updateable = usersM.updateableFields(); // take only user fields that are allowed to change
 		for (const key in updateable) {
-		if (updateable.hasOwnProperty(key) && req.body[key]) {
-				userUpdate[key] = req.body[key];
-			}
+			if (updateable.hasOwnProperty(key) && req.body[key])
+					userUpdate[key] = req.body[key];
 		}
-		////if conmpleted false
-		if(user.completed === false) {
-			// valid first time setup data
-			console.log('modified.');
-				validator.fieldsExist(userUpdate, usersM.setupFields());
-				validator.setup(userUpdate);
-				userUpdate.bio = userUpdate.bio.trim();
-			// patch usersM with new data
-			const update = usersM.updateUser()
+		if(!user.completed) {
+			console.log('err');
+			validator.fieldsExist(userUpdate, usersM.setupFields());
+			validator.setup(userUpdate);
+			userUpdate.bio = userUpdate.bio.trim();
+			userUpdate.completed = true;		// patch usersM with new data && set completed === true
 		}
 		else {
-			const update = usersM.updateUser(user.uuid , userUpdate)
-			console.log('heeewwe');
-
+			console.log('err2');
+			let tovalidate = '';
+			for (const key in userUpdate) {
+				if (userUpdate.hasOwnProperty(key))
+					tovalidate += (tovalidate === '') ? `${key}` : ` ${key}`;;
+			}
+			validator.userInfo(tovalidate , userUpdate);
+			if (typeof userUpdate.bio === 'string')
+				userUpdate.bio = userUpdate.bio.trim();
 		}
+		usersM.update(user.uuid , userUpdate)
 		res.status(200).send({msg: "user updated", status: "OK"});
 	}
 	catch (err) {
+		console.log(err);
 		next(handleError(422, err));
 	}
 }
 
 module.exports = {
 	verify:				verifyUserEmail,
-	isVerified:			isVerifiedUser,
+	isVerifiedLoad:		isVerifiedLoadUser,
+	isCompleted:		isCompleted,
 	create:     		createUser,
 	getAll:				getUsersAll,
 	getById:    		getUserById,

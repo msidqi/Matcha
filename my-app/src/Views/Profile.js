@@ -25,7 +25,7 @@ const Profile = ( { match } ) => {
             <ul>Username: { user.username }</ul>
             <ul>Firstname: { user.firstname }</ul>
             <ul>Lastname: { user.lastname }</ul>
-            <ul>Age: { user.birthdateShort }</ul>
+            <ul>Birthdate: { user.birthdateShort }</ul>
             <ul>Age: { user.age }</ul>
             <ul>Gender: { user.gender }</ul>
             <ul>Score: { user.score }</ul>

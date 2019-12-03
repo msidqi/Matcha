@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector, useEffect } from 'react-redux';
 import { saveUser } from '../reduxx/actions/save';
 import { Link } from 'react-router-dom';
 import { Collapse,  Navbar, NavbarToggler, NavbarBrand, Nav, NavItem, NavLink,
@@ -25,7 +25,10 @@ function NavB() {
             ls.set('connected', false);
             ls.set('uuid', '');
             ls.set('email', '');
-            dispatch(saveUser({uuid: '', email: '', connected: false}));
+            ls.set('verified', false);
+            ls.set('completed', false);
+            ls.set('username', '');
+            dispatch(saveUser({uuid: '', email: '', connected: false, completed: false, verified: false, username: ''}));
         }
         catch (err) {
             console.log(err);
@@ -33,17 +36,20 @@ function NavB() {
     }
 
     const refresh = () => {
+        let ver = ls.get('verified');
+        let com = ls.get('completed');
         let con = ls.get('connected');
         let email = ls.get('email');
         let uuid = ls.get('uuid');
-        dispatch(saveUser({ uuid: uuid, email: email, connected: con ? true : false }));
+        let name = ls.get('username');
+        dispatch(saveUser({ uuid: uuid, email: email, connected: con ? true : false, verified: ver, completed: com, username: name }));
     }
 
     return (
       <>
         <div>
             <Navbar dark expand="md" className={'card-2'} onClick={ refresh }>
-                <NavbarBrand tag={Link}  to={"/"}>webchallenge</NavbarBrand>
+                <NavbarBrand tag={Link}  to={"/"}>Matcha</NavbarBrand>
                 <NavbarToggler onClick={toggle} />
                 <Collapse isOpen={isOpen} navbar>
                 <Nav className="ml-auto" navbar>
@@ -68,7 +74,7 @@ function NavB() {
                             </DropdownItem>
                         </>}
                         { connected &&
-                            <DropdownItem onClick={ handleLogout } tag={Link} to={ '/' } >
+                            <DropdownItem onClick={ handleLogout } tag={Link} to={ '/home' } >
                             Logout
                             </DropdownItem>
                         }

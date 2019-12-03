@@ -81,18 +81,13 @@ const validateAge = function (age) {
     return (err);
 }
 
-
-
-
-
-
-const months = {Jan: 1,	Feb: 2,	Mar: 3,	Apr: 4,	May: 5,	Jun: 6,	Jul: 7,	Aug: 8,	Sep: 9,	Oct: 10, Nov: 11, Dev: 12};
+const months = {Jan: 1,	Feb: 2,	Mar: 3,	Apr: 4,	May: 5,	Jun: 6,	Jul: 7,	Aug: 8,	Sep: 9,	Oct: 10, Nov: 11, Dec: 12};
 
 var monthDays = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 
 const calculateAge = (birthdate = []) => { //'30/12/2019' format
 	let current = new Date().toString();
-	let age = -1;
+	let age = -5;
 
 	birthdate = birthdate.split('/');
 	current = current.split(' ');
@@ -144,27 +139,37 @@ const validateBirthDate = function (birthdate) {
 
 const validateGender = (gender) => {
 	let err = ''
-	if ((err = /^Male$|^Female$/g.test(gender) ? "" : "Gender Is either Male or Female.") !== "")
+	if ((err = (typeof gender === 'string') ? "" : "variable is not a string.") !== "")
+		return (err);
+	if ((err = (gender.length !== 0) ? "" : "Please choose your gender.") !== "")
+		return (err);
+	if ((err = /^Male$|^Female$/g.test(gender) ? "" : "Gender is either Male or Female.") !== "")
 		return (err);
 	return err
 }
 
 const validateSexpref = (sexualpreference) => {
 	let err = ''
-	if ((err = /^Heterosexual$|^Homosexual$|^Bisexual$/g.test(sexualpreference) ? "" : "Choose your Orientation.") !== "")
+	if ((err = (typeof sexualpreference === 'string') ? "" : "variable is not a string.") !== "")
+		return (err);
+	if ((err = (sexualpreference.length !== 0) ? "" : "Please choose your sexual preference.") !== "")
+		return (err);
+	if ((err = /^Heterosexual$|^Homosexual$|^Bisexual$/g.test(sexualpreference) ? "" : "Choose your orientation.") !== "")
 		return (err);
 	return err
 }
 
 const validateBio = (bio) =>{
 	let err = ''
-	
+
 	if ((err = (typeof bio === 'string') ? "" : "variable is not a string.") !== "")
 		return (err);
 	bio = bio.trim();
-	if ((err = (bio.length <= 250 || bio.length === 0) ? "" : "variable is not a string.") !== "")
+	if ((err = (bio.length <= 250) ? "" : "bio is too long (250 characters max).") !== "")
 		return (err);
-	return(err)
+	if ((err = (bio.length >= 0) ? "" : "bio is required.") !== "")
+		return (err);
+	return(err);
 }
 
 const validateUser = function (user) {
@@ -194,48 +199,49 @@ const validateUser = function (user) {
 const validateSetup = (user) =>{
 	let errors = {};
 	let err = "";
-
+	console.log('validate Setup ------');
 	if ((err = validateGender(user.gender)) !== "")
 		errors.genderError = err;
 	if ((err = validateSexpref(user.sexpref)) !== "")
 		errors.sexprefError = err;
-	if ((err = validateBio(user.bio)) !== "")
+	if ((err = validateBio(user)) !== "")
 		errors.bioError = err;
-	console.log('here');
 	for (let key in errors) {
 		if (errors[key] !== "")
 			throw errors;
 	}
 }
 
-// const validationFunc = {
-// 	username:			validateUsername,
-//     password:			validatePassword,
-// 	email:				validateEmail,
-// 	age:				validateAge,
-// 	birthdate:			validateBirthDate,
-// 	user:				validateUser,
-// 	gender:				validateGender,
-// 	sexpref:			validateSexpref,
-// 	bio:				validateBio,
-// }
+const validationFunc = {
+	username:			validateUsername,
+    password:			validatePassword,
+	email:				validateEmail,
+	age:				validateAge,
+	birthdate:			validateBirthDate,
+	user:				validateUser,
+	gender:				validateGender,
+	sexpref:			validateSexpref,
+	bio:				validateBio,
+}
 
-// const validateUserInfo = function (params, user) {
-// 	let errors = {};
-// 	let err = "";
+const validateUserInfo = function (params, user) {
+	let errors = {};
+	let err = "";
 
-// 	params = params.split(' ');
-// 	for (let i = 0; i < params.length; i++) {
-// 		let key = params[i];
-// 		let val = user[key];
-// 		if (val && validationFunc[key] && (err = validationFunc[key](val)) !== "")
-// 			errors[`${key}Error`] =	err;
-// 	}
-// 	for (let key in errors) {
-// 		if (errors[key] !== "")
-// 			throw errors;
-// 	}
-// }
+	params = params.split(' ');
+		console.log('-----');
+		for (let i = 0; i < params.length; i++) {
+		let key = params[i];
+		let val = user[key];
+		console.log(params[i], user[key], typeof user[key]);
+		if (val && validationFunc[key] && (err = validationFunc[key](val)) !== "")
+			errors[`${key}Error`] =	err;
+	}
+	for (let key in errors) {
+		if (errors[key] !== "")
+			throw errors;
+	}
+}
 
 const fieldsExist = function (toVerify, fieldsRequired) {
 	let throwErr = false;
@@ -269,6 +275,51 @@ module.exports = {
 	calculateAge:			calculateAge,
 	isValidDate:			isValidDate,
 	fieldsExist:			fieldsExist,
-	// validateUserInfo:		validateUserInfo,
+	userInfo:				validateUserInfo,
 	setup: 					validateSetup,
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// const validationFunc = {
+// 	username:			validateUsername,
+//     password:			validatePassword,
+// 	email:				validateEmail,
+// 	age:				validateAge,
+// 	birthdate:			validateBirthDate,
+// 	user:				validateUser,
+// 	gender:				validateGender,
+// 	sexpref:			validateSexpref,
+// 	bio:				validateBio,
+// }
+
+// const validateUserInfo = function (params, user) {
+// 	let errors = {};
+// 	let err = "";
+
+// 	params = params.split(' ');
+// 	for (let i = 0; i < params.length; i++) {
+// 		let key = params[i];
+// 		let val = user[key];
+// 		if (val && validationFunc[key] && (err = validationFunc[key](val)) !== "")
+// 			errors[`${key}Error`] =	err;
+// 	}
+// 	for (let key in errors) {
+// 		if (errors[key] !== "")
+// 			throw errors;
+// 	}
+// }

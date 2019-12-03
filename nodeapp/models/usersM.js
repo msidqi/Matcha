@@ -17,7 +17,9 @@ const storeUser = async (user) => {
 		pictures:{pictures},
 		uuid:{uuid},
 		token:{token},
-		conToken:{conToken}}) RETURN n`;
+		conToken:{conToken}
+		completed: {completed}})
+		RETURN n`;
 	const params = user;
 	let result = await db.query(cypher, params);
 	if (result.records.length === 0)
@@ -69,18 +71,18 @@ const updateUser =  async (uuid, userUpdates) => {
 	for (const key in userUpdates) {
 		if (userUpdates.hasOwnProperty(key)) {
 			if (first) {
-				set += `n.${key} = '${userUpdates[key]}' `;///////// NOTICE: add query depending on type of variable;
+				set += `n.${key} = {${key}} `;
 				first = false;
 			}
 			else
-				set += `, n.${key} = '${userUpdates[key]}' `;
+				set += `, n.${key} = {${key}} `;
 		}
 	}
 	let cypher = `MATCH (n:user {uuid: {uuid}}) SET ${set} RETURN n`;
 	let params = {uuid: uuid, ...userUpdates};
 
 	let result = await db.query(cypher, params);
-	console.log(result);
+	console.log(result.records[0].get('n').properties);
 }
  
 const userExists = async (uuid, username, email) => { // by uuid or username && email
@@ -183,6 +185,6 @@ module.exports = {
   deleteJWT:		deleteJWT,
   setupFields: 		setupFields,
   updateVerify:		updateVerify,
-  updateUser:		updateUser,
+  update:		updateUser,
   updateableFields:	updateableFields,
 };

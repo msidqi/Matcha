@@ -6,8 +6,7 @@ const useStyles = makeStyles(theme => ({
     marginLeft: theme.spacing(1),
     marginRight: theme.spacing(1),
     width: '100%',
-    borderColor: 'green',
-      borderWidth: 2,
+    borderWidth: 2,
   }
 }));
 
@@ -17,10 +16,11 @@ export default function UserInput(props) {
 
   const type = props.type ? props.type : "";
   const msg = props.helperText ? props.helperText : "";
-  // console.log(msg);
+  // console.log(props.multiline);
   const error = msg ? true : false;
   return (
       <TextField
+      multiline={ props.multiline }
       className={ classes.textField }
       label={ props.label }
       margin="normal"
@@ -28,6 +28,7 @@ export default function UserInput(props) {
       value={ props.val }
       type={ type }
       onChange={ props.func }
+      onKeyDown={ props.funcKey }
       helperText={ msg }
       error={ error }
       />

@@ -40,8 +40,11 @@ const middleware = (req, res, next) => {
 	let conToken = req.cookies.conToken;
 	// console.log('Msidqi321@gmail.com', conToken);
 
-	if (!conToken || !(req.verifiedUser = verifyConnection(conToken)))
+	if (!conToken || !(req.connectedUser = verifyConnection(conToken))|| !req.connectedUser)
 		next(handleError(400, 'Invalid or missing token.'));
+	console.log('middleware w');
+	if (req.params.id && req.connectedUser.uuid !== req.params.id)
+		next(handleError(403, 'Unauthorized token for this action.'));
 	next();
 }
 //users/f40ad3aa-1287-451b-9a1f-7bd92cb144d1

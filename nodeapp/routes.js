@@ -5,20 +5,22 @@ const conf = require('./config/config');
 
 const usersC = require('./controllers/usersC');
 const auth = require('./middlewares/auth');
+const baseline = require('./helpers/resetValues');
 
 
-Router.get('/users/', usersC.getAll);
-Router.get('/users/:id', usersC.getById);
+Router.get('/users/', baseline, usersC.getAll);
+Router.get('/users/:id', baseline, usersC.getById);
 
-Router.post('/users/', usersC.create);
+Router.post('/users/', baseline, usersC.create);
 
-Router.patch('/users/:id', auth.middleware, usersC.isVerified, usersC.edit);
+Router.patch('/users/:id', baseline, auth.middleware, usersC.isVerifiedLoad, usersC.edit);
 
-Router.post('/session/', usersC.login);
+Router.post('/session/', baseline, usersC.login);
 
-Router.delete('/session/', auth.middleware, usersC.logout);
+Router.delete('/session/', baseline, auth.middleware, usersC.logout);
+// Router.delete('/session/', baseline, auth.middleware, usersC.isVerifiedLoad, usersC.logout);
 
-Router.post('/verification/:id/:token', usersC.verify);
+Router.post('/verification/:id/:token', baseline, usersC.verify);
 
 
 
