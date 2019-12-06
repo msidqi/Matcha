@@ -1,40 +1,52 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Grid, Button, makeStyles, Avatar, Paper, Chip } from '@material-ui/core';
-import TagFacesIcon from '@material-ui/icons/TagFaces';
-import { useDispatch, useSelector } from 'react-redux';
+import { Container, Grid, Button, makeStyles, Avatar, Chip } from '@material-ui/core';
+import { useSelector } from 'react-redux';
 import UserInput from '../components/UserInput';
 import ItemsMenu from '../components/ItemsMenu';
 import conf from '../config/config';
 import axios from 'axios';
 import { Redirect } from 'react-router-dom';
-import ls from 'local-storage';
 
 const useStyles = makeStyles(theme => ({
     continue: {
         margin: theme.spacing(3, 0, 2),
-        // justifyContent: 'center',
         textAlign:  'center',
       },
     button: {
         // height: '100%',
         width: '100%',
         color: 'white',
-        background: "#3f51b5",
+        background: "#171225",
         borderRadius: '20px',
         '&:hover': {
-            background: "#5e6cb5",
+            background: "#ef4a25",
         },
     },
+    upload: {
+        margin: '5px auto',
+        // width: '100%',
+        // borderRadius: '20px',
+    },
     info: {
-        // justifyContent: 'center',
         textAlign:  'center',
         minHeight: '400px',
     },
+    card: {
+        paddingRight:    '0px',
+        paddingLeft:    '0px',
+        background: 'white',
+        'border-radius': '5px',
+        overflow: 'auto',
+        'margin-top': '100px',
+        'box-shadow': '0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)',
+    },
+    paddingLeftRight: {
+        paddingLeft: '32px',
+        paddingRight: '32px',
+    },
     banner: {
-        background: '#b30000',
-        height: '50px',
-        borderBottomLeftRadius: '5px',
-        borderBottomRightRadius: '5px',
+        background: '#ef4a25',
+        height: '10px',
     },
     fields: {
         marginLeft: theme.spacing(1),
@@ -43,11 +55,8 @@ const useStyles = makeStyles(theme => ({
         borderColor: 'green',
         borderWidth: 2,
       },
-      formControl: {
-        margin: theme.spacing(1),
-        minWidth: 120,
-      },
       chipsContainer: {
+        // margin: '5px auto',
         display: 'flex',
         justifyContent: 'center',
         flexWrap: 'wrap',
@@ -55,6 +64,9 @@ const useStyles = makeStyles(theme => ({
       },
       chips: {
         margin: theme.spacing(0.5),
+      },
+      margincenter: {
+        margin: '5px auto',
       },
 }));
 
@@ -71,7 +83,7 @@ function ProfileSetup(props) {
 
     const [chipToAdd, setchipToAdd] = useState('')
     const handleDelete = (tagToDelete) => () => {
-        console.log(setup.tags.filter( tag => tag !== tagToDelete));
+        // console.log(setup.tags.filter( tag => tag !== tagToDelete));
         let newArr = setup.tags.filter( tag => tag !== tagToDelete );
         setSetup({...setup, tags: newArr});
     };
@@ -95,13 +107,18 @@ function ProfileSetup(props) {
     const [setup, setSetup] = useState(init);
 
     const handleTagsAdd = (event) => {
-        console.log(setup);
-        if (event.key === 'Enter' && typeof chipToAdd === 'string' && chipToAdd[0] === '#' && chipToAdd.length > 1) {
-            setup.tags.push(chipToAdd);
-            setSetup({...setup, tags: [...setup.tags]});
+        console.log(document.getElementById('imageInput').files);
+        let withHashTag = chipToAdd[0] === '#' ? chipToAdd : `#${chipToAdd}`;
+        if (event.key === 'Enter' && withHashTag.length > 1) {
+            if (!setup.tags.includes(withHashTag)) {
+                setup.tags.push( withHashTag );
+                setSetup({...setup, tags: [...setup.tags]});
+            }
             setchipToAdd('');
         }
+        // console.log(setup);
     }
+
     const handleEventChange = (event) => {
         setSetup({...setup, [event.target.name]:event.target.value});
     }
@@ -109,42 +126,41 @@ function ProfileSetup(props) {
     const handleErrors = (obj) => {
         setSetup({...setup, ...obj});
     }
-
-    const sendData = async () => {
-        try {
-            await axios.patch(`/api/${conf.apiVer}/users/${uuid}`, setup);
-            settoNext(true);
-        }
-        catch (e) {
-          if (e.response.data.errors) {
-            const errors = {
-              genderError: e.response.data.errors.genderError,
-              sexprefError: e.response.data.errors.sexprefError,
-              bioError: e.response.data.errors.bioError,
-              tagsError: e.response.data.errors.tagsError,
-              picturesError: e.response.data.errors.picturesError,
-            }
-            handleErrors(errors);
-          }
-        }
-      }
   
       const Submit = (event) => {
         event.preventDefault();
+        const sendData = async () => {
+            try {
+                await axios.patch(`/api/${conf.apiVer}/users/${uuid}`, setup);
+                settoNext(true);
+            }
+            catch (e) {
+              if (e.response.data.errors) {
+                const errors = {
+                  genderError: e.response.data.errors.genderError,
+                  sexprefError: e.response.data.errors.sexprefError,
+                  bioError: e.response.data.errors.bioError,
+                  tagsError: e.response.data.errors.tagsError,
+                  picturesError: e.response.data.errors.picturesError,
+                }
+                handleErrors(errors);
+              }
+            }
+          }
           sendData();
       }
 
       return (
-        <>
-      <Container className={ 'card-1'} maxWidth='sm'>
-        {/* {connected && <Redirect to="/home"/>} */}
-        {toNext && <Redirect to="/users"/>}
-            <Grid container spacing={0} className={classes.info}>
-                    <Grid item xs={12} className={classes.banner}>
+    <>
+    {toNext && <Redirect to="/users"/>}
+    {/* {connected && <Redirect to="/home"/>} */}
+        <Container className={ classes.card } maxWidth='sm'>
+            <Grid item xs={12} className={classes.banner}>
+            </Grid>
+            <Grid container spacing={0} className={`${classes.paddingLeftRight} ${classes.info}`}>
                     
-                    </Grid>
-                    <Grid item xs={12}>
-                        <Avatar>{username.toUpperCase()[0]}</Avatar>
+                    <Grid item xs={12} >
+                        <Avatar className={classes.margincenter} variant="rounded">{username.toUpperCase()[0]}</Avatar>
                     </Grid>
                     <Grid item xs={12} >
                         <h4>Tell us more about you.</h4>
@@ -199,6 +215,11 @@ function ProfileSetup(props) {
                             )}
                         </span>
                     </Grid>
+                    <Grid item xs={12}>
+                        <form method="patch" encType="multipart/form-data">
+                            <input className={classes.upload} id="imageInput" type="file" name="photos" multiple/>
+                        </form>
+                    </Grid>
                     <Grid item xs={12} className={classes.continue}>
                         <Button
                             className={classes.button}
@@ -211,7 +232,7 @@ function ProfileSetup(props) {
                     </Grid>
             </Grid>
       </Container>
-      </>
+    </>
     );
 }
 

@@ -42,7 +42,7 @@ const middleware = (req, res, next) => {
 
 	if (!conToken || !(req.connectedUser = verifyConnection(conToken))|| !req.connectedUser)
 		next(handleError(400, 'Invalid or missing token.'));
-	console.log('middleware w');
+	// console.log('middleware w');
 	if (req.params.id && req.connectedUser.uuid !== req.params.id)
 		next(handleError(403, 'Unauthorized token for this action.'));
 	next();

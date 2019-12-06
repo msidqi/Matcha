@@ -161,7 +161,7 @@ const validateSexpref = (sexualpreference) => {
 
 const validateBio = (bio) =>{
 	let err = ''
-
+	// console.log('bio--->', bio);
 	if ((err = (typeof bio === 'string') ? "" : "variable is not a string.") !== "")
 		return (err);
 	bio = bio.trim();
@@ -199,12 +199,12 @@ const validateUser = function (user) {
 const validateSetup = (user) =>{
 	let errors = {};
 	let err = "";
-	console.log('validate Setup ------');
+
 	if ((err = validateGender(user.gender)) !== "")
 		errors.genderError = err;
 	if ((err = validateSexpref(user.sexpref)) !== "")
 		errors.sexprefError = err;
-	if ((err = validateBio(user)) !== "")
+	if ((err = validateBio(user.bio)) !== "")
 		errors.bioError = err;
 	for (let key in errors) {
 		if (errors[key] !== "")
@@ -229,11 +229,11 @@ const validateUserInfo = function (params, user) {
 	let err = "";
 
 	params = params.split(' ');
-		console.log('-----');
+		// console.log('-----');
 		for (let i = 0; i < params.length; i++) {
 		let key = params[i];
 		let val = user[key];
-		console.log(params[i], user[key], typeof user[key]);
+		// console.log(params[i], user[key], typeof user[key]);
 		if (val && validationFunc[key] && (err = validationFunc[key](val)) !== "")
 			errors[`${key}Error`] =	err;
 	}

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Container, Grid } from '@material-ui/core';
+import { Container, Grid, makeStyles } from '@material-ui/core';
 import { useSelector, useDispatch } from 'react-redux';
 import { saveUser } from '../reduxx/actions/save';
 import UserInput from '../components/UserInput';
@@ -9,8 +9,28 @@ import axios from 'axios';
 import { Redirect } from 'react-router-dom';
 import ls from 'local-storage';
 
+const useStyles = makeStyles(theme => ({
+  card: {
+    paddingRight:    '0px',
+    paddingLeft:    '0px',
+    background: 'white',
+    'border-radius': '5px',
+    overflow: 'auto',
+    'margin-top': '100px',
+    'box-shadow': '0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)',
+  },
+  paddingLeftRight: {
+    paddingLeft: '32px',
+    paddingRight: '32px',
+  },
+  banner: {
+      background: '#ef4a25',
+      height: '10px',
+  },
+}));
 function Login() {
 
+    const classes = useStyles();
     const init = {
       email: '',
       password: '',
@@ -18,14 +38,13 @@ function Login() {
       passwordError: '',
     };
     const [Login, setLogin] = useState(init);
-    const [toNext, settoNext] = useState(false);
     const connected = ls.get('connected');
     const completed = ls.get('completed');
     var con = useSelector(state => state.user.connected);
     
     const dispatch = useDispatch();
 
-    const handleEventChange = (event, obj = null) => {
+    const handleEventChange = (event) => {
       setLogin({...Login, [event.target.name]:event.target.value});
     }
 
@@ -50,7 +69,6 @@ function Login() {
                         verified: result.data.verified,
                         completed: result.data.completed,
                         username: result.data.username}));
-        // settoNext(true);
       }
       catch (e) {
         if (e.response && e.response.data.errors) {
@@ -69,11 +87,12 @@ function Login() {
     }
     console.log(connected, completed);
     return (
-      <Container className={ 'card-1' } maxWidth='sm'>
-        {(connected && completed === false) && <Redirect to={'/setup'} />}
-        {((toNext || connected) && completed === true) && <Redirect to={'/'} />}
+      <Container className={ classes.card } maxWidth='sm'>
+        {((connected) && completed === true) && <Redirect to={'/'} />}
+        <Grid item xs={12} className={classes.banner}>
+        </Grid>
           <form  onSubmit={ loginUser } autoComplete="off" noValidate>
-            <Grid container spacing={0}>
+            <Grid container spacing={0} className={`${classes.paddingLeftRight} ${classes.info}`}>
                   <Grid item xs={12}>
                       <UserInput
                       label={ 'email' }

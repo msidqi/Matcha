@@ -7,17 +7,24 @@ const usersC = require('./controllers/usersC');
 const auth = require('./middlewares/auth');
 const baseline = require('./helpers/resetValues');
 
+const multer = require('multer');
+const upload = multer({ dest: 'uploads/' });
 
 Router.get('/users/', baseline, usersC.getAll);
 Router.get('/users/:id', baseline, usersC.getById);
 
 Router.post('/users/', baseline, usersC.create);
 
-Router.patch('/users/:id', baseline, auth.middleware, usersC.isVerifiedLoad, usersC.edit);
+Router.patch('/users/:id', baseline, auth.middleware, usersC.isVerifiedLoad, upload.array('photos', 5), function (req, res, next) {
+    // req.file is the `avatar` file
+    // req.body will hold the text fields, if there were any
+    console.log(req.files);
+    next();
+  }, usersC.edit);
 
 Router.post('/session/', baseline, usersC.login);
 
-Router.delete('/session/', baseline, auth.middleware, usersC.logout);
+Router.delete('/session/', baseline, /*auth.middleware,*/ usersC.logout);
 // Router.delete('/session/', baseline, auth.middleware, usersC.isVerifiedLoad, usersC.logout);
 
 Router.post('/verification/:id/:token', baseline, usersC.verify);

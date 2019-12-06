@@ -1,19 +1,43 @@
 import React, { useState } from 'react';
-import { Container, Grid } from '@material-ui/core';
-// import { useSelector, useDispatch } from 'react-redux';
-// import { saveRegister } from '../reduxx/actions/save';
+import { Container, Grid, makeStyles } from '@material-ui/core';
 import BirthDate from '../components/BirthDate';
 import UserInput from '../components/UserInput';
 import Submit from '../components/Submit';
 import conf from '../config/config';
 import axios from 'axios';
 import { Redirect } from 'react-router-dom';
-import ls from 'local-storage';
+import { useSelector } from 'react-redux';
 
+const useStyles = makeStyles(theme => ({
+  card: {
+    paddingRight:    '0px',
+    paddingLeft:    '0px',
+    background: 'white',
+    'border-radius': '5px',
+    overflow: 'auto',
+    'margin-top': '100px',
+    'box-shadow': '0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)',
+  },
+  paddingLeftRight: {
+    paddingLeft: '32px',
+    paddingRight: '32px',
+  },
+  info: {
+    textAlign:  'center',
+    minHeight: '400px',
+  },
+  banner: {
+      background: '#ef4a25',
+      height: '10px',
+  },
+}));
 
 function Register() {
 
-    const connected = ls.get('connected');
+    const classes = useStyles();
+
+    const connected = useSelector(state => state.user.connected);
+
     const init = {
 			username: '',
 			firstname: '',
@@ -74,10 +98,12 @@ function Register() {
     }
 
     return (
-      <Container className={ 'card-1'} maxWidth='sm'>
+      <Container className={ classes.card} maxWidth='sm'>
         {(toNext || connected) && <Redirect to="/login"/>}
+        <Grid item xs={12} className={classes.banner}>
+        </Grid>
           <form  onSubmit={ registerUser } autoComplete="off" noValidate>
-            <Grid container spacing={0}>
+            <Grid container spacing={0} className={`${classes.paddingLeftRight} ${classes.info}`}>
                   <Grid item xs={12}>
                     <UserInput
                       label={ 'username' }

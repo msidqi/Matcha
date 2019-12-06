@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector, useEffect } from 'react-redux';
+import { makeStyles } from '@material-ui/core';
 import { saveUser } from '../reduxx/actions/save';
 import { Link } from 'react-router-dom';
 import { Collapse,  Navbar, NavbarToggler, NavbarBrand, Nav, NavItem, NavLink,
@@ -8,8 +9,14 @@ import conf from '../config/config';
 import ls from 'local-storage';
 import axios from 'axios';
 
+const useStyles = makeStyles(theme => ({
+    bold: {
+        'font-weight': 'bold',
+    },
+}));
 function NavB() {
 
+    const classes = useStyles();
     const [isOpen, setIsOpen] = useState(false);
 	const toggle = () => setIsOpen(!isOpen);
 
@@ -47,7 +54,7 @@ function NavB() {
 
     return (
       <>
-        <div>
+        <div className={ classes.bold }>
             <Navbar dark expand="md" className={'card-2'} onClick={ refresh }>
                 <NavbarBrand tag={Link}  to={"/"}>Matcha</NavbarBrand>
                 <NavbarToggler onClick={toggle} />

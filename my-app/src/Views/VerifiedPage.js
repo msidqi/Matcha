@@ -4,9 +4,25 @@ import { useDispatch, useSelector } from 'react-redux';
 import conf from '../config/config';
 import axios from 'axios';
 import { Redirect } from 'react-router-dom';
-import ls from 'local-storage';
 
 const useStyles = makeStyles(theme => ({
+    card: {
+        paddingRight:    '0px',
+        paddingLeft:    '0px',
+        background: 'white',
+        'border-radius': '5px',
+        overflow: 'auto',
+        'margin-top': '100px',
+        'box-shadow': '0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)',
+    },
+    paddingLeftRight: {
+        paddingLeft: '32px',
+        paddingRight: '32px',
+    },
+    banner: {
+        background: '#ef4a25',
+        height: '10px',
+    },
     continue: {
         margin: theme.spacing(3, 0, 2),
         // justifyContent: 'center',
@@ -69,12 +85,12 @@ function VerifiedPage(props) {
 
     return (
         <>
-      <Container className={ 'card-1'} maxWidth='sm'>
+      <Container className={ classes.card} maxWidth='sm'>
         {connected && <Redirect to="/home"/>}
         {toNext && <Redirect to="/login"/>}
-            <Grid container spacing={0}>
-                <Grid item xs={12} className={classes.banner}>
-                </Grid>
+        <Grid item xs={12} className={classes.banner}>
+        </Grid>
+            <Grid container spacing={0} className={`${classes.paddingLeftRight} ${classes.info}`}>
                 {Verified && 
                 <Grid item xs={12} className={classes.info}>
                     <h4>You account is now verified!</h4>

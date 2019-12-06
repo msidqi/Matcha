@@ -159,31 +159,32 @@ const editUser = async (req, res, next) => {
 		const user = req.dbuser;
 		let userUpdate = {};
 
-		console.log('err111');
+		// console.log('err111');
 		let updateable = usersM.updateableFields(); // take only user fields that are allowed to change
 		for (const key in updateable) {
 			if (updateable.hasOwnProperty(key) && req.body[key])
 					userUpdate[key] = req.body[key];
 		}
 		if(!user.completed) {
-			console.log('err');
+			console.log('NOT COMPLETED');
 			validator.fieldsExist(userUpdate, usersM.setupFields());
 			validator.setup(userUpdate);
 			userUpdate.bio = userUpdate.bio.trim();
-			userUpdate.completed = true;		// patch usersM with new data && set completed === true
+			// userUpdate.completed = true;		// patch usersM with new data && set completed === true
 		}
 		else {
-			console.log('err2');
 			let tovalidate = '';
 			for (const key in userUpdate) {
 				if (userUpdate.hasOwnProperty(key))
-					tovalidate += (tovalidate === '') ? `${key}` : ` ${key}`;;
+				tovalidate += (tovalidate === '') ? `${key}` : ` ${key}`;;
 			}
 			validator.userInfo(tovalidate , userUpdate);
 			if (typeof userUpdate.bio === 'string')
-				userUpdate.bio = userUpdate.bio.trim();
+			userUpdate.bio = userUpdate.bio.trim();
 		}
-		usersM.update(user.uuid , userUpdate)
+		console.log(req.files);
+		console.log(userUpdate);
+		// usersM.update(user.uuid , userUpdate)
 		res.status(200).send({msg: "user updated", status: "OK"});
 	}
 	catch (err) {

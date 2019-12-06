@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 import Login from '../Views/Login';
 import Register from '../Views/Register';
 import Home from '../Views/Home';
@@ -6,19 +6,21 @@ import Users from '../Views/Users';
 import Profile from '../Views/Profile';
 import VerifiedPage from '../Views/VerifiedPage';
 import ProfileSetup from '../Views/ProfileSetup';
+import { useSelector } from 'react-redux';
 import NavB from './navbar';
 import {
     BrowserRouter as Router,
     Switch,
     Route,
-    // Link  
   } from 'react-router-dom';
+  import Redirector from './Redirector'; 
 
 
 export default function Routes() {
     return (
         <Router>
             <NavB />
+            <Redirector />
             <Switch>
                 <Route path="/users" exact component={Users} />
                 <Route path="/users/:id" component={Profile} />
