@@ -8,19 +8,26 @@ const auth = require('./middlewares/auth');
 const baseline = require('./helpers/resetValues');
 
 const multer = require('multer');
-const upload = multer({ dest: 'uploads/' });
+
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+      cb(null, './uploads/')
+    },
+    filename: function (req, file, cb) {
+      crypto.pseudoRandomBytes(16, function (err, raw) {
+        cb(null, raw.toString('hex') + Date.now() + '.' + mime.extension(file.mimetype));
+      });
+    }
+});
+
+const upload = multer({ storage: storage });
 
 Router.get('/users/', baseline, usersC.getAll);
 Router.get('/users/:id', baseline, usersC.getById);
 
 Router.post('/users/', baseline, usersC.create);
 
-Router.patch('/users/:id', baseline, auth.middleware, usersC.isVerifiedLoad, upload.array('photos', 5), function (req, res, next) {
-    // req.file is the `avatar` file
-    // req.body will hold the text fields, if there were any
-    console.log(req.files);
-    next();
-  }, usersC.edit);
+Router.put('/users/:id', baseline, auth.middleware, usersC.isVerifiedLoad, upload.array('pictures', 5), usersC.edit);
 
 Router.post('/session/', baseline, usersC.login);
 

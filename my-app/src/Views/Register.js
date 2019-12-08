@@ -7,6 +7,7 @@ import conf from '../config/config';
 import axios from 'axios';
 import { Redirect } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import UserState from '../components/UserState';
 
 const useStyles = makeStyles(theme => ({
   card: {
@@ -36,7 +37,7 @@ function Register() {
 
     const classes = useStyles();
 
-    const connected = useSelector(state => state.user.connected);
+    const {connected} = UserState();
 
     const init = {
 			username: '',

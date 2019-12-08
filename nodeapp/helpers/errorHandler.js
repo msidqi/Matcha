@@ -6,7 +6,12 @@ const handleError = (code, err) => {
 }
 
 const errorMiddleware = (err, req, res, next) => {
-    res.status(err.status).json(err.value);
+    if (!err.status) {
+        console.log(err);
+        res.status(500).json('Internal Server Error.');
+    }
+    else
+        res.status(err.status).json(err.value);
 }
 
 module.exports = {

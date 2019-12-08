@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Container, Grid, makeStyles } from '@material-ui/core';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { saveUser } from '../reduxx/actions/save';
 import UserInput from '../components/UserInput';
 import Submit from '../components/Submit';
@@ -8,6 +8,7 @@ import conf from '../config/config';
 import axios from 'axios';
 import { Redirect } from 'react-router-dom';
 import ls from 'local-storage';
+import UserState from '../components/UserState';
 
 const useStyles = makeStyles(theme => ({
   card: {
@@ -38,10 +39,9 @@ function Login() {
       passwordError: '',
     };
     const [Login, setLogin] = useState(init);
-    const connected = ls.get('connected');
-    const completed = ls.get('completed');
-    var con = useSelector(state => state.user.connected);
-    
+
+    const {connected, completed} = UserState();
+
     const dispatch = useDispatch();
 
     const handleEventChange = (event) => {
@@ -88,7 +88,7 @@ function Login() {
     console.log(connected, completed);
     return (
       <Container className={ classes.card } maxWidth='sm'>
-        {((connected) && completed === true) && <Redirect to={'/'} />}
+        {/* {((connected) && completed === true) && <Redirect to={'/'} />} */}
         <Grid item xs={12} className={classes.banner}>
         </Grid>
           <form  onSubmit={ loginUser } autoComplete="off" noValidate>

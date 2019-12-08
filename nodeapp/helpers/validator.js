@@ -161,7 +161,7 @@ const validateSexpref = (sexualpreference) => {
 
 const validateBio = (bio) =>{
 	let err = ''
-	// console.log('bio--->', bio);
+
 	if ((err = (typeof bio === 'string') ? "" : "variable is not a string.") !== "")
 		return (err);
 	bio = bio.trim();
@@ -169,6 +169,18 @@ const validateBio = (bio) =>{
 		return (err);
 	if ((err = (bio.length >= 0) ? "" : "bio is required.") !== "")
 		return (err);
+	return(err);
+}
+
+const validateTags = (tags = []) =>{
+	let err = ''
+
+	if ((err = (tags.length > 3) ? "" : "Please add a minimum of 3 tags") !== "")
+		return (err);
+	for (let i = 0; i < tags.length; i++) {
+		if (typeof tags[i] !== 'string' || tags[i][0] !== '#' || tags[i].length > 50 || tags[i].length < 2)
+			return ('Incorrect tag format.')
+	}
 	return(err);
 }
 
@@ -206,6 +218,10 @@ const validateSetup = (user) =>{
 		errors.sexprefError = err;
 	if ((err = validateBio(user.bio)) !== "")
 		errors.bioError = err;
+	if ((err = validateTags(user.tags)) !== "")
+		errors.tagsError = err;
+	// if ((err = validatePictures(user.pictures)) !== "")
+		// errors.picturesError = err;
 	for (let key in errors) {
 		if (errors[key] !== "")
 			throw errors;
@@ -229,11 +245,9 @@ const validateUserInfo = function (params, user) {
 	let err = "";
 
 	params = params.split(' ');
-		// console.log('-----');
-		for (let i = 0; i < params.length; i++) {
+	for (let i = 0; i < params.length; i++) {
 		let key = params[i];
 		let val = user[key];
-		// console.log(params[i], user[key], typeof user[key]);
 		if (val && validationFunc[key] && (err = validationFunc[key](val)) !== "")
 			errors[`${key}Error`] =	err;
 	}
@@ -248,12 +262,12 @@ const fieldsExist = function (toVerify, fieldsRequired) {
 	let errors = {};
 
 	if (typeof toVerify === 'undefined' || toVerify === null)
-		throw new Error('data is undefined.');
+		throw 'data is undefined.';
 	for (const key in fieldsRequired) {
 		fieldsRequired[key] = toVerify[key];
 	}
 	for (let key in fieldsRequired) {
-		if (typeof fieldsRequired[key] === 'undefined' || fieldsRequired[key] === null) {
+		if (typeof fieldsRequired[key] === 'undefined' || fieldsRequired[key] === null || fieldsRequired[key].length === 0) {
 			errors[key] = `field required.`;
 			throwErr = true;
 		}

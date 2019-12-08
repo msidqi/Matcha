@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Grid, Button, makeStyles, Grow, Paper } from '@material-ui/core';
-import { useDispatch, useSelector } from 'react-redux';
+import { Container, Grid, Button, makeStyles } from '@material-ui/core';
 import conf from '../config/config';
 import axios from 'axios';
 import { Redirect } from 'react-router-dom';
+import UserState from '../components/UserState';
 
 const useStyles = makeStyles(theme => ({
     card: {
@@ -19,10 +19,10 @@ const useStyles = makeStyles(theme => ({
         paddingLeft: '32px',
         paddingRight: '32px',
     },
-    banner: {
-        background: '#ef4a25',
-        height: '10px',
-    },
+    // banner: {
+    //     background: '#ef4a25',
+    //     height: '10px',
+    // },
     continue: {
         margin: theme.spacing(3, 0, 2),
         // justifyContent: 'center',
@@ -52,10 +52,9 @@ const useStyles = makeStyles(theme => ({
 
 function VerifiedPage(props) {
 
-    // const connected = ls.get('connected');
     const classes = useStyles();
 
-    var connected = useSelector(state => state.user.connected);
+    const {connected} = UserState();
 
     const [toNext, settoNext] = useState(false);
     const [Verified, setVerified] = useState(false);

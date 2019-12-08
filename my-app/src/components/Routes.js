@@ -13,26 +13,27 @@ import {
     Switch,
     Route,
   } from 'react-router-dom';
-  import Redirector from './Redirector'; 
+import AccountSetup from './AccountSetup'; 
+import PrivateRoute from './PrivateRoute'; 
+import GuestRoute from './GuestRoute'; 
 
 
 export default function Routes() {
     return (
         <Router>
             <NavB />
-            <Redirector />
+            <AccountSetup />
             <Switch>
                 <Route path="/users" exact component={Users} />
-                <Route path="/users/:id" component={Profile} />
-                <Route path="/login" component={Login} />
-                <Route path="/home" component={Home} />
-                <Route path="/register" component={Register} />
-                <Route path="/setup" exact component={ProfileSetup} />
+                <GuestRoute path="/users/:id" component={Profile} />
+                <GuestRoute path="/login" component={Login} />
+                <GuestRoute path="/register" component={Register} />
+                <PrivateRoute path="/setup" component={ProfileSetup} />
                 {/* <Route path="/profile" exact component={Profile} /> */}
                 {/* <Route path="/profile/edit" component={Register} /> */}
                 <Route path="/verification/:id/:token" exact component={VerifiedPage} />
                 <Route path="/" component={Home} />
             </Switch>
         </Router>
-    )
+    );
 }

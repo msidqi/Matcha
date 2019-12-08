@@ -59,6 +59,7 @@ const isVerifiedLoadUser = async (req, res, next) => {
 			throw 'Account not verified.';
     }
     catch (err) {
+		console.log('HERE+ERR');
 		next(handleError(422, err));
     }
 }
@@ -167,22 +168,23 @@ const editUser = async (req, res, next) => {
 		}
 		if(!user.completed) {
 			console.log('NOT COMPLETED');
+			userUpdate.pictures = req.files;
 			validator.fieldsExist(userUpdate, usersM.setupFields());
 			validator.setup(userUpdate);
-			userUpdate.bio = userUpdate.bio.trim();
 			// userUpdate.completed = true;		// patch usersM with new data && set completed === true
 		}
 		else {
+			console.log('COMPLETED');
 			let tovalidate = '';
 			for (const key in userUpdate) {
 				if (userUpdate.hasOwnProperty(key))
 				tovalidate += (tovalidate === '') ? `${key}` : ` ${key}`;;
 			}
 			validator.userInfo(tovalidate , userUpdate);
-			if (typeof userUpdate.bio === 'string')
-			userUpdate.bio = userUpdate.bio.trim();
 		}
-		console.log(req.files);
+		if (typeof userUpdate.bio === 'string')
+			userUpdate.bio = userUpdate.bio.trim();
+		console.log(req.body.photos);
 		console.log(userUpdate);
 		// usersM.update(user.uuid , userUpdate)
 		res.status(200).send({msg: "user updated", status: "OK"});
