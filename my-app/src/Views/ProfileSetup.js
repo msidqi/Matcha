@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Container, Grid, Button, makeStyles, Avatar, Chip, Input } from '@material-ui/core';
+import { Container, Grid, Button, makeStyles, Avatar, Chip } from '@material-ui/core';
 // import { useSelector } from 'react-redux';
 import UserInput from '../components/UserInput';
 import ItemsMenu from '../components/ItemsMenu';
@@ -7,6 +7,7 @@ import conf from '../config/config';
 import axios from 'axios';
 import { Redirect } from 'react-router-dom';
 import UserState from '../components/UserState';
+// import AddTags from '../components/AddTags';
 // import FileInput from '../components/FileInput';
 
 const useStyles = makeStyles(theme => ({
@@ -73,22 +74,28 @@ const useStyles = makeStyles(theme => ({
       margincenter: {
         margin: '5px auto',
       },
+      image: {
+          width: '100%',
+          background: 'black',
+          height: '100%',
+      },
 }));
 
 function ProfileSetup(props) {
 
     const classes = useStyles();
 
-    const {uuid, username} = UserState();
+    const {uuid} = UserState();
 
     const [toNext, settoNext] = useState(false);
 
-    const [chipToAdd, setchipToAdd] = useState('')
-    const handleDelete = (tagToDelete) => () => {
-        // console.log(setup.tags.filter( tag => tag !== tagToDelete));
+    const [chipToAdd, setchipToAdd] = useState('');
+
+    const handleTagsDelete = (tagToDelete) => () => {
         let newArr = setup.tags.filter( tag => tag !== tagToDelete );
         setSetup({...setup, tags: newArr});
-    };
+    }
+
     const handleTagsChange = (event) => {
         setchipToAdd(event.target.value);
     }
@@ -97,19 +104,15 @@ function ProfileSetup(props) {
         gender: '',
         sexpref: '',
         bio: '',
-        tags: [
-            '#Tech',
-            '#Culture',
-            '#Traveling',
-            '#BDSM',
-            '#ALPHABET',
-            '#BigKnees',
-        ],
+        tags: [ '#Tech', '#Culture', '#Ugly-Bastard', '#BDSM', '#ALPHABET', '#BigKnees' ],
         pictures: [],
+        picIndex: -1,
     }
+
     const [setup, setSetup] = useState(init);
 
     const handleTagsAdd = (event) => {
+        console.log('here');
         let withHashTag = chipToAdd[0] === '#' ? chipToAdd : `#${chipToAdd}`;
         if (event.key === 'Enter' && withHashTag.length > 1) {
             if (!setup.tags.includes(withHashTag)) {
@@ -118,109 +121,89 @@ function ProfileSetup(props) {
             }
             setchipToAdd('');
         }
-        // console.log(setup);
     }
 
     const handleEventChange = (event) => {
         setSetup({...setup, [event.target.name]:event.target.value});
     }
 
-    const handleErrors = (obj) => {
-        setSetup({...setup, ...obj});
+    const handleInputChange = () => {
+        // if (setup.picIndex === -1) {
+            let reader = new FileReader();
+            reader.readAsDataURL(document.getElementById('pictures').files[0]);
+            reader.onload = (event) => {
+                if(event.target.readyState === FileReader.DONE) {
+                    let img = new Image();
+                    img.src = event.target.result;
+                    img.onload = () => {
+                        let avatarPic = document.getElementById('Avatar').getElementsByTagName('img')[0];
+                        avatarPic.src = img.src;
+                    };
+                };
+            }
+            setSetup({...setup, pictures: [...document.getElementById('pictures').files], picIndex: 0});
+        // }
+        // else
+        //     setSetup({...setup, pictures: [...document.getElementById('pictures').files]});
     }
 
-      const Submit = (event) => {
-        event.preventDefault();
-        const sendData = async () => {
-            try {
-                let formData = new FormData();
-                formData.append('gender', setup.gender);
-                formData.append('sexpref', setup.sexpref);
-                formData.append('bio', setup.bio);
-                for (let i = 0; i < setup.tags.length; i++) {
-                    formData.append('tags', setup.tags[i]);
-                }
-                let pictures = document.getElementById('pictures');
-                console.log(pictures.files);
-                for (const key in pictures.files) {
-                    if (pictures.files.hasOwnProperty(key)) {
-                        formData.append('pictures', pictures.files[key]);
-                    }
-                }
-                console.log(formData);
-                await axios.put(`/api/${conf.apiVer}/users/${uuid}`, formData);
-                settoNext(true);
+    const Submit = (event) => {
+    event.preventDefault();
+    (async function sendData () {
+        try {
+            let formData = new FormData();
+            formData.append('gender', setup.gender);
+            formData.append('sexpref', setup.sexpref);
+            formData.append('bio', setup.bio);
+            formData.append('picIndex', setup.picIndex);
+            for (let i = 0; i < setup.tags.length; i++) {
+                formData.append('tags', setup.tags[i]);
             }
-            catch (e) {
-              console.log(e.response.data.errors);
-              if (e.response.data.errors) {
-                const errors = {
-                  genderError: (e.response.data.errors.genderError ? e.response.data.errors.genderError : e.response.data.errors.gender),
-                  sexprefError: (e.response.data.errors.sexprefError ? e.response.data.errors.sexprefError : e.response.data.errors.sexpref),
-                  bioError: (e.response.data.errors.bioError ? e.response.data.errors.bioError : e.response.data.errors.bio),
-                  tagsError: (e.response.data.errors.tagsError ? e.response.data.errors.tagsError : e.response.data.errors.tags),
-                  picturesError: (e.response.data.errors.picturesError ? e.response.data.errors.picturesError : e.response.data.errors.pictures),
+            let pictures = document.getElementById('pictures');
+            console.log(pictures.files);
+            for (const key in pictures.files) {
+                if (pictures.files.hasOwnProperty(key)) {
+                    formData.append('pictures', pictures.files[key]);
                 }
-                handleErrors(errors);
-              }
             }
-          }
-          sendData();
-      }
+            console.log(formData);
+            await axios.put(`/api/${conf.apiVer}/users/${uuid}`, formData);
+            settoNext(true);
+        }
+        catch (e) {
+            console.log(e.response.data.errors);
+            if (e.response.data.errors) {
+            const errors = {
+                genderError: (e.response.data.errors.genderError ? e.response.data.errors.genderError : e.response.data.errors.gender),
+                sexprefError: (e.response.data.errors.sexprefError ? e.response.data.errors.sexprefError : e.response.data.errors.sexpref),
+                bioError: (e.response.data.errors.bioError ? e.response.data.errors.bioError : e.response.data.errors.bio),
+                tagsError: (e.response.data.errors.tagsError ? e.response.data.errors.tagsError : e.response.data.errors.tags),
+                picturesError: (e.response.data.errors.picturesError ? e.response.data.errors.picturesError : e.response.data.errors.pictures),
+            }
+            console.log(errors.tagsError);
+            setSetup({...setup, ...errors});
+            }
+        }
+    })()
+        // sendData();
+    }
 
-    const changeAvatarPic = (event, img) => {
+    const changeAvatarPic = (event, img, startIndex) => {
         let avatarPic = document.getElementById('Avatar').getElementsByTagName('img')[0];
-        if (event)
-            avatarPic.src = event.target.toDataURL();
-        else
-            avatarPic.src = img.src;
-    }
-
-    function previewImages(e) {
-        let files = e.target.files;
-        for (let key = 0; (key < 5 && key < files.length); key++) {
-            let canvas = document.getElementById(`myCanvas-${key}`);
-            let file = files[key];
-            if(file && file.type.match('image.*')) {
-                canvas.hidden = false;
-                let reader = new FileReader();
-                reader.readAsDataURL(file);
-                reader.onload = (event) => {
-                    if( event.target.readyState == FileReader.DONE) {
-                        let img = new Image();
-                        img.src = event.target.result;
-                        img.onload = () => {
-                            if (key === 0)
-                                changeAvatarPic(null, img);
-                            // console.log(img.width, img.height, canvas.height, img.width * (canvas.height / img.height), canvas.height / img.height);
-                            let context = canvas.getContext("2d");
-                            if (img.width > img.height)
-                                context.drawImage(img, 0, 0, canvas.width, img.height * (canvas.height / img.height));
-                            else
-                                context.drawImage(img, 0, 0, img.width * (canvas.width / img.width), canvas.width);
-                        };
-                    }
-                }
-            } else {
-                alert("not an image");
-                break ;
-            }
-        }
-        for (let i = 4; i >= files.length; i--) {
-            document.getElementById(`myCanvas-${i}`).hidden = true;
-        }
+        let index = event ? event.target.name : startIndex;
+        avatarPic.src = event ? event.target.src : img.src;
+        setSetup({...setup, picIndex: index});
     }
 
     return (
     <>
-    {toNext && <Redirect to="/users"/>}
+    {toNext && <Redirect to="/home"/>}
         <Container className={ classes.card } maxWidth='sm'>
             <Grid item xs={12} className={classes.banner}>
             </Grid>
             <Grid container spacing={0} className={`${classes.paddingLeftRight} ${classes.info}`}>
-                    
                     <Grid item xs={12} >
-                        <Avatar className={classes.margincenter} id="Avatar" alt="Remy Sharp" src="https://ssl.gstatic.com/images/branding/product/1x/avatar_square_blue_512dp.png" />
+                        <Avatar className={classes.margincenter} id="Avatar" alt="Profile pic" src="https://ssl.gstatic.com/images/branding/product/1x/avatar_square_blue_512dp.png" />
                         {/* <Avatar id="Avatar" className={classes.margincenter} variant="rounded">{username.toUpperCase()[0]}</Avatar> */}
                     </Grid>
                     <Grid item xs={12} >
@@ -230,7 +213,7 @@ function ProfileSetup(props) {
                         <ItemsMenu 
                         itemName={ 'Gender' }
                         name={ 'gender' }
-                        items={ ['Male', 'Femalee'] }
+                        items={ ['Male', 'Female'] }
                         val={ setup.gender }
                         func={ handleEventChange }
                         helperText={ setup.genderError }
@@ -240,7 +223,7 @@ function ProfileSetup(props) {
                         <ItemsMenu
                         itemName={ 'Sexual orientation ' }
                         name={ 'sexpref' }
-                        items={ ['Heterosexual', 'HomosexualL', 'Bisexual'] }
+                        items={ ['Heterosexual', 'Homosexual', 'Bisexual'] }
                         val={ setup.sexpref }
                         func={ handleEventChange }
                         helperText={ setup.sexprefError }
@@ -271,45 +254,41 @@ function ProfileSetup(props) {
                                     size="small"
                                     key={index}
                                     label={label}
-                                    onDelete={handleDelete(label)}
+                                    onDelete={ handleTagsDelete(label) }
                                 />)
                             )}
                         </span>
                     </Grid>
                     <Grid item xs={12}>
-                            {/* <label className={classes.upload}>
-                                Click to select your photos...
-                                <Input 
-                                style={{ width: '100%' }}
-                                id="pictures" type="file" name="pictures" multiple
-                                />
-                            </label> */}
                             <div>
                                 <label className={classes.upload}>
                                     Click to select your photos...{ setup.picturesError }
                                     <input
-                                        onChange={ previewImages }
+                                        onChange={ handleInputChange }
                                         style={{ display: "none" }}
-                                        id="pictures" type="file" name="pictures" multiple  
+                                        id="pictures" type="file" name="pictures" multiple
                                     />
                                 </label>
                             </div>
                     </Grid>
-                    <Grid item xs={6}>
-                        <canvas id="myCanvas-0" hidden onClick={ changeAvatarPic }></canvas>
-                    </Grid>
-                    <Grid item xs={6}>
-                        <canvas id="myCanvas-1" hidden onClick={ changeAvatarPic }></canvas>
-                    </Grid>
-                    <Grid item xs={6}>
-                        <canvas id="myCanvas-2" hidden onClick={ changeAvatarPic }></canvas>
-                    </Grid>
-                    <Grid item xs={6}>
-                        <canvas id="myCanvas-3" hidden onClick={ changeAvatarPic }></canvas>
-                    </Grid>
-                    <Grid item xs={12}>
-                        <canvas id="myCanvas-4" hidden onClick={ changeAvatarPic }></canvas>
-                    </Grid>
+                    {setup.pictures.map( (file, index) => {
+                        let reader = new FileReader();
+                        reader.readAsDataURL(file);
+                        reader.onload = (event) => {
+                            if( event.target.readyState === FileReader.DONE) {
+                                let img = new Image();
+                                img.src = event.target.result;
+                                img.onload = () => {
+                                    let myImage = document.getElementById(`myImage-${index}`);
+                                    if (myImage)
+                                        myImage.src = img.src;
+                                };
+                            };
+                        }
+                        return (<Grid item xs={6} key={index}>
+                        <img className={classes.image} id={`myImage-${index}`} alt="preview image" name={index} src="" onClick={ changeAvatarPic }/>
+                        </Grid>);
+                    })}
                     <Grid item xs={12} className={classes.continue}>
                         <Button
                             className={classes.button}

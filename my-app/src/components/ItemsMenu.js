@@ -22,7 +22,7 @@ export default function UserInput(props) {
   const error = msg ? true : false;
   return (
     <FormControl className={classes.fields} error={ error }>
-        <InputLabel id="demo-simple-select-helper-label">{ props.itemName }</InputLabel>
+        <InputLabel required={props.required} id="demo-simple-select-helper-label">{ props.itemName }</InputLabel>
         <Select
         labelId="demo-simple-select-helper-label"
         id="demo-simple-select-helper"

@@ -160,7 +160,7 @@ const validateSexpref = (sexualpreference) => {
 }
 
 const validateBio = (bio) =>{
-	let err = ''
+	let err = '';
 
 	if ((err = (typeof bio === 'string') ? "" : "variable is not a string.") !== "")
 		return (err);
@@ -173,9 +173,9 @@ const validateBio = (bio) =>{
 }
 
 const validateTags = (tags = []) =>{
-	let err = ''
+	let err = '';
 
-	if ((err = (tags.length > 3) ? "" : "Please add a minimum of 3 tags") !== "")
+	if ((err = (tags.length >= 3) ? "" : "Please add a minimum of 3 tags") !== "")
 		return (err);
 	for (let i = 0; i < tags.length; i++) {
 		if (typeof tags[i] !== 'string' || tags[i][0] !== '#' || tags[i].length > 50 || tags[i].length < 2)

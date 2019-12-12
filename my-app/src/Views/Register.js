@@ -6,7 +6,6 @@ import Submit from '../components/Submit';
 import conf from '../config/config';
 import axios from 'axios';
 import { Redirect } from 'react-router-dom';
-import { useSelector } from 'react-redux';
 import UserState from '../components/UserState';
 
 const useStyles = makeStyles(theme => ({

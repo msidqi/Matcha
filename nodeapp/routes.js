@@ -7,20 +7,7 @@ const usersC = require('./controllers/usersC');
 const auth = require('./middlewares/auth');
 const baseline = require('./helpers/resetValues');
 
-const multer = require('multer');
-
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-      cb(null, './uploads/')
-    },
-    filename: function (req, file, cb) {
-      crypto.pseudoRandomBytes(16, function (err, raw) {
-        cb(null, raw.toString('hex') + Date.now() + '.' + mime.extension(file.mimetype));
-      });
-    }
-});
-
-const upload = multer({ storage: storage });
+const upload = require('./helpers/multer');
 
 Router.get('/users/', baseline, usersC.getAll);
 Router.get('/users/:id', baseline, usersC.getById);

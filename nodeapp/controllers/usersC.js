@@ -184,7 +184,6 @@ const editUser = async (req, res, next) => {
 		}
 		if (typeof userUpdate.bio === 'string')
 			userUpdate.bio = userUpdate.bio.trim();
-		console.log(req.body.photos);
 		console.log(userUpdate);
 		// usersM.update(user.uuid , userUpdate)
 		res.status(200).send({msg: "user updated", status: "OK"});

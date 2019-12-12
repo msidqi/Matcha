@@ -6,7 +6,7 @@ import UserInput from '../components/UserInput';
 import Submit from '../components/Submit';
 import conf from '../config/config';
 import axios from 'axios';
-import { Redirect } from 'react-router-dom';
+// import { Redirect } from 'react-router-dom';
 import ls from 'local-storage';
 import UserState from '../components/UserState';
 

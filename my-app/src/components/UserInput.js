@@ -33,6 +33,7 @@ export default function UserInput(props) {
       onKeyDown={ props.funcKey }
       helperText={ msg }
       error={ error }
+      required={props.required}
       />
     );
 }
