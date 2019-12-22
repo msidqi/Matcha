@@ -1,1 +1,6 @@
 *.pem
+*.pub
+*.jpg
+*.png
+*.jpeg
+.env

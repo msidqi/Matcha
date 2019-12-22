@@ -1,7 +1,6 @@
 const db = require ('../helpers/db');
 
 
-
 const storeUser = async (user) => {
  	const cypher = `CREATE (n:user{
 		username:{username},
@@ -13,14 +12,15 @@ const storeUser = async (user) => {
 		score:{score},
 		gender:{gender},
 		sexualpreferences:{sexualpreferences},
-		biography:{biography},
+		bio:{bio},
 		pictures:{pictures},
 		uuid:{uuid},
 		token:{token},
-		conToken:{conToken}
-		completed: {completed}})
-		RETURN n`;
+		conToken:{conToken},
+		completed: {completed}
+		}) RETURN n`;
 	const params = user;
+	console.log(params, cypher)
 	let result = await db.query(cypher, params);
 	if (result.records.length === 0)
     	throw new Error ('Could not store user.');
@@ -152,24 +152,28 @@ const setupFields = () => {
 			gender: null,
 			sexpref: null,
 			tags: null,
+			position: null,
 			bio: null,
 			pictures: null,
+			picIndex: null,
 	};
 }
 
-const updateableFields = () => {
+const updateableFields = () => { // updateableFieldsSetup
 	return {
-			username: null,
-			firstname: null,
-			lastname: null,
-			// email: null,
-			birthdateShort: null,
-			password: null,
-			gender: null,
-			sexpref: null,
-			tags: null,
-			bio: null,
-			pictures: null,
+		username: null,
+		firstname: null,
+		lastname: null,
+		// email: null,
+		birthdateShort: null,
+		password: null,
+		gender: null,
+		position: null,
+		sexpref: null,
+		tags: null,
+		bio: null,
+		pictures: null,
+		picIndex: null,
 	};
 }
 
@@ -185,6 +189,6 @@ module.exports = {
   deleteJWT:		deleteJWT,
   setupFields: 		setupFields,
   updateVerify:		updateVerify,
-  update:		updateUser,
+  update:			updateUser,
   updateableFields:	updateableFields,
 };

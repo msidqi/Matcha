@@ -9,28 +9,14 @@ import axios from 'axios';
 // import { Redirect } from 'react-router-dom';
 import ls from 'local-storage';
 import UserState from '../components/UserState';
+import getPosition from '../helpers/getPosition';
 
 const useStyles = makeStyles(theme => ({
-  card: {
-    paddingRight:    '0px',
-    paddingLeft:    '0px',
-    background: 'white',
-    'border-radius': '5px',
-    overflow: 'auto',
-    'margin-top': '100px',
-    'box-shadow': '0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)',
-  },
-  paddingLeftRight: {
-    paddingLeft: '32px',
-    paddingRight: '32px',
-  },
-  banner: {
-      background: '#ef4a25',
-      height: '10px',
-  },
+  card: theme.card,
+  paddingLeftRight: theme.paddingLeftRight,
+  banner: theme.banner,
 }));
 function Login() {
-
     const classes = useStyles();
     const init = {
       email: '',
@@ -52,39 +38,41 @@ function Login() {
       setLogin({...Login, ...obj});
     }
 
-    const sendData = async () => {
-      try {
-        let result = await axios.post(`/api/${conf.apiVer}/session/`, Login);
-        console.log(result.data.completed);
-        ls.set('connected', true);
-        ls.set('uuid', result.data.uuid);
-        ls.set('completed', result.data.completed);
-        ls.set('verified', result.data.verified);
-        ls.set('email', Login.email);
-        ls.set('username', result.data.username);
-        dispatch(saveUser({
-                        uuid: result.data.uuid,
-                        email: Login.email,
-                        connected: true,
-                        verified: result.data.verified,
-                        completed: result.data.completed,
-                        username: result.data.username}));
-      }
-      catch (e) {
-        if (e.response && e.response.data.errors) {
-          const errors = {
-            emailError: e.response.data.errors.emailError,
-            passwordError: e.response.data.errors.passwordError,
-          };
-          handleChange(errors);
-        }
-      }
-    }
-
     const loginUser = async (event) => {
       event.preventDefault();
-	    await sendData();
+      await (async function sendData() {
+        try {
+          let position = await getPosition();
+          // console.log(position);
+          let result = await axios.post(`/api/${conf.apiVer}/session/`, Login);
+          // console.log(result.data.completed);
+          ls.set('connected', true);
+          ls.set('uuid', result.data.uuid);
+          ls.set('completed', result.data.completed);
+          ls.set('verified', result.data.verified);
+          ls.set('email', Login.email);
+          ls.set('username', result.data.username);
+          dispatch(saveUser({
+                          uuid: result.data.uuid,
+                          email: Login.email,
+                          connected: true,
+                          verified: result.data.verified,
+                          completed: result.data.completed,
+                          username: result.data.username}));
+        }
+        catch (e) {
+          console.log(e);
+          if (e.response && e.response.data.errors) {
+            const errors = {
+              emailError: e.response.data.errors.emailError,
+              passwordError: e.response.data.errors.passwordError,
+            };
+            handleChange(errors);
+          }
+        }
+      })();
     }
+
     console.log(connected, completed);
     return (
       <Container className={ classes.card } maxWidth='sm'>

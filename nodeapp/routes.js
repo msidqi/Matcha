@@ -3,20 +3,29 @@ const Router = express.Router();
 
 const conf = require('./config/config');
 
+const imageC = require('./controllers/imageC');
 const usersC = require('./controllers/usersC');
 const auth = require('./middlewares/auth');
 const baseline = require('./helpers/resetValues');
+const tagsM = require('./models/tagsM');
 
 const upload = require('./helpers/multer');
 
 Router.get('/users/', baseline, usersC.getAll);
-Router.get('/users/:id', baseline, usersC.getById);
+
+// Router.get('/users/', baseline, usersC.getAll); // query males | females | both | limits=3/page |
+
+Router.get('/users/:id', baseline, auth.middleware, usersC.getById);
 
 Router.post('/users/', baseline, usersC.create);
 
 Router.put('/users/:id', baseline, auth.middleware, usersC.isVerifiedLoad, upload.array('pictures', 5), usersC.edit);
 
-Router.post('/session/', baseline, usersC.login);
+Router.patch('/users/:id/location', baseline, auth.middleware, usersC.isVerifiedLoad, usersC.isCompleted, usersC.locationRefresh);
+
+Router.post('/session/', baseline, usersC.isVerifiedLoad, usersC.login);
+
+Router.get('/images/:imageName', baseline, auth.middleware, usersC.isVerifiedLoad, imageC.load);
 
 Router.delete('/session/', baseline, /*auth.middleware,*/ usersC.logout);
 // Router.delete('/session/', baseline, auth.middleware, usersC.isVerifiedLoad, usersC.logout);

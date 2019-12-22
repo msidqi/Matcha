@@ -143,7 +143,7 @@ const validateGender = (gender) => {
 		return (err);
 	if ((err = (gender.length !== 0) ? "" : "Please choose your gender.") !== "")
 		return (err);
-	if ((err = /^Male$|^Female$/g.test(gender) ? "" : "Gender is either Male or Female.") !== "")
+	if ((err = /^Male$|^Female$/.test(gender) ? "" : "Gender is either Male or Female.") !== "")
 		return (err);
 	return err
 }
@@ -154,7 +154,7 @@ const validateSexpref = (sexualpreference) => {
 		return (err);
 	if ((err = (sexualpreference.length !== 0) ? "" : "Please choose your sexual preference.") !== "")
 		return (err);
-	if ((err = /^Heterosexual$|^Homosexual$|^Bisexual$/g.test(sexualpreference) ? "" : "Choose your orientation.") !== "")
+	if ((err = /^Heterosexual$|^Homosexual$|^Bisexual$/.test(sexualpreference) ? "" : "Choose your orientation.") !== "")
 		return (err);
 	return err
 }
@@ -182,6 +182,28 @@ const validateTags = (tags = []) =>{
 			return ('Incorrect tag format.')
 	}
 	return(err);
+}
+
+const validateTagsNOTSETUP = (tags = []) =>{
+	let err = '';
+
+	if ((err = (tags.length == 0) ? "" : "No tags.") !== "")
+		return (err);
+	for (let i = 0; i < tags.length; i++) {
+		if (typeof tags[i] !== 'string' || tags[i][0] !== '#' || tags[i].length > 50 || tags[i].length < 2)
+			return ('Incorrect tag format.')
+	}
+	return(err);
+}
+
+const validatePosition = (position) => {
+	console.log('position');
+	console.log(position);
+	if ((err = (position
+		&& typeof position[1] === 'number' && typeof position[0]  === 'number'
+		&& position[0] >= -180 && position[0] <= 180 && position[1] >= -90
+		&& position[1] <= 90) ? "" : "Invalid position.") !== "")
+		return (err);
 }
 
 const validateUser = function (user) {
@@ -220,7 +242,12 @@ const validateSetup = (user) =>{
 		errors.bioError = err;
 	if ((err = validateTags(user.tags)) !== "")
 		errors.tagsError = err;
-	// if ((err = validatePictures(user.pictures)) !== "")
+	console.log('----');
+	console.log(user.position);
+	console.log('----');
+	if ((err = validatePosition(user.position)) !== "")
+		errors.positionError = err;
+	// if ((err = validatePictures(user.pictures)) !== "") // valdiate image data and that file exists in path + pictureIndex(profilepic)
 		// errors.picturesError = err;
 	for (let key in errors) {
 		if (errors[key] !== "")
@@ -268,7 +295,7 @@ const fieldsExist = function (toVerify, fieldsRequired) {
 	}
 	for (let key in fieldsRequired) {
 		if (typeof fieldsRequired[key] === 'undefined' || fieldsRequired[key] === null || fieldsRequired[key].length === 0) {
-			errors[key] = `field required.`;
+			errors[`${key}Error`] = `field required.`;
 			throwErr = true;
 		}
 	}
@@ -291,6 +318,7 @@ module.exports = {
 	fieldsExist:			fieldsExist,
 	userInfo:				validateUserInfo,
 	setup: 					validateSetup,
+	tags:					validateTags,
 }
 
 

@@ -6,9 +6,11 @@ const conf = {
     apiVer:     'v1',
     apiReq:        'http',
     apiPort:       3001,
+
 };
 
 conf.viewUrl = `${conf.req}://${conf.domainName}:${conf.port}`;
 conf.apiUrl = `${conf.apiReq}://${conf.apiDomainName}:${conf.apiPort}/api/${conf.apiVer}`;
+conf.apiImages = `${conf.apiReq}://${conf.apiDomainName}:${conf.apiPort}/api/${conf.apiVer}/images`;
 
 export default conf;

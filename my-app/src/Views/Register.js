@@ -9,27 +9,10 @@ import { Redirect } from 'react-router-dom';
 import UserState from '../components/UserState';
 
 const useStyles = makeStyles(theme => ({
-  card: {
-    paddingRight:    '0px',
-    paddingLeft:    '0px',
-    background: 'white',
-    'border-radius': '5px',
-    overflow: 'auto',
-    'margin-top': '100px',
-    'box-shadow': '0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)',
-  },
-  paddingLeftRight: {
-    paddingLeft: '32px',
-    paddingRight: '32px',
-  },
-  info: {
-    textAlign:  'center',
-    minHeight: '400px',
-  },
-  banner: {
-      background: '#ef4a25',
-      height: '10px',
-  },
+  card: theme.card,
+  paddingLeftRight: theme.paddingLeftRight,
+  info: theme.info,
+  banner: theme.banner,
 }));
 
 function Register() {
@@ -73,6 +56,7 @@ function Register() {
 
     const sendData = async () => {
       try {
+        console.log(Register);
         await axios.post(`/api/${conf.apiVer}/users`, Register);
         settoNext(true);
       }

@@ -20,12 +20,11 @@ const storage = multer.diskStorage({
 const upload = multer({
     storage: storage,
     fileFilter: function (req, file, cb) {
-        if (1) {
-            console.log('extension: ', mime.extension(file.mimetype), ' | ', file.mimetype);
-            cb(null, false)
-        }
-        else
-            cb(null, true);
+      let extention = mime.extension(file.mimetype);
+      if (extention == 'png' || extention == 'jpg' || extention == 'jpeg') {
+        cb(null, true);
+      } else
+        cb(null, false)
     },
 });
 

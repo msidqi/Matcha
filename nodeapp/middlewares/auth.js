@@ -12,7 +12,7 @@ const createConnection = (res, uuid, username, email) => {
 	options = { algorithm: 'RS256' };
 	private_key= fs.readFileSync(__dirname + '/keys.pem').toString();
 	conToken = jwt.sign(payload, private_key, options);
-	res.cookie('conToken', conToken, { expires: new Date(Date.now() + 5000000), httpOnly: true });
+	res.cookie('conToken', conToken, { httpOnly: true }); // expires: new Date(Date.now() + 5000000), 
 }
 
 const deleteConnection = (res) => {
@@ -42,7 +42,7 @@ const middleware = (req, res, next) => {
 
 	if (!conToken || !(req.connectedUser = verifyConnection(conToken))|| !req.connectedUser)
 		next(handleError(400, 'Invalid or missing token.'));
-	// console.log('middleware w');
+	// console.log('middleware w', connectedUser);
 	if (req.params.id && req.connectedUser.uuid !== req.params.id)
 		next(handleError(403, 'Unauthorized token for this action.'));
 	next();

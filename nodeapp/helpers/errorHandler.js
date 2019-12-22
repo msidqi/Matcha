@@ -1,8 +1,7 @@
 
 const multerErrHandler = function (err, res) {
-    console.log(err);
     if (err.code === 'LIMIT_UNEXPECTED_FILE')
-        res.status(422).json({ error: "Exceeded allowed number of files." });
+        res.status(415).json({ error: "Exceeded allowed number of files." });
     else
         res.status(415).json({ error: 'Unsupported file format.' });
 }

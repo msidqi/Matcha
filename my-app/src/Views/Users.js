@@ -1,24 +1,34 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import conf from '../config/config';
+import axios from 'axios';
 
 function Users() {
 	const black = {color: 'black'};
 
     
     const [users, setUsers] = useState([]);
-    const fetchUsers = async () => {
-        try {
-            const data = await fetch(`/api/${conf.apiVer}/users`);
-			const users = await data.json();
-			console.log(users)
-            setUsers(users);
-        } catch (err) {
-            console.error(err);
-        }
-    }
+    
 
-    useEffect(() => { fetchUsers() }, []);
+    useEffect(() => { 
+        const CancelToken = axios.CancelToken;
+        let cancel;
+        const fetchUsers = async () => {
+            try {
+                const res = await axios.get(`/api/${conf.apiVer}/users/`, { cancelToken: new CancelToken(function executor(c) {
+                    // An executor function receives a cancel function as a parameter
+                    cancel = c;
+                    }) });
+                const users = res.data;
+                console.log(users)
+                setUsers(users);
+            } catch (err) {
+                console.log(err);
+            }
+        }
+        fetchUsers();
+        return (cancel);
+    }, []);
     
     return (
       <>

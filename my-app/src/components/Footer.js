@@ -5,13 +5,12 @@ import UserState from '../components/UserState';
 
 const useStyles = makeStyles(theme => ({
   container: {
-    background: 'black',
+    background: '#161125',
     color: 'white',
     width: '100%',
-    minHeight: '200px',
+    height: '200px',
     position: 'absolute',
     bottom: '0px',
-    // display: 'inline',
     // overflow: 'auto',
     // height: '100vw'
   },

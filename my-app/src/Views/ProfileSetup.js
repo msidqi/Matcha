@@ -7,8 +7,13 @@ import conf from '../config/config';
 import axios from 'axios';
 import { Redirect } from 'react-router-dom';
 import UserState from '../components/UserState';
+import { useDispatch } from 'react-redux';
+import { saveUser } from '../reduxx/actions/save';
+import ls from 'local-storage';
+import getPosition from '../helpers/getPosition';
 // import AddTags from '../components/AddTags';
 // import FileInput from '../components/FileInput';
+// CREATE CONSTRAINT ON (t:tag) ASSERT t.name IS UNIQUE;
 
 const useStyles = makeStyles(theme => ({
     continue: {
@@ -31,27 +36,10 @@ const useStyles = makeStyles(theme => ({
         width: '100%',
         // borderRadius: '20px',
     },
-    info: {
-        textAlign:  'center',
-        minHeight: '400px',
-    },
-    card: {
-        paddingRight:    '0px',
-        paddingLeft:    '0px',
-        background: 'white',
-        'border-radius': '5px',
-        overflow: 'auto',
-        'margin-top': '100px',
-        'box-shadow': '0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)',
-    },
-    paddingLeftRight: {
-        paddingLeft: '32px',
-        paddingRight: '32px',
-    },
-    banner: {
-        background: '#ef4a25',
-        height: '10px',
-    },
+    info: theme.info,
+    card: theme.card,
+    paddingLeftRight: theme.paddingLeftRight,
+    banner: theme.banner,
     fields: {
         marginLeft: theme.spacing(1),
         marginRight: theme.spacing(1),
@@ -71,9 +59,7 @@ const useStyles = makeStyles(theme => ({
         margin: '2px',
         // margin: theme.spacing(0.5),
       },
-      margincenter: {
-        margin: '5px auto',
-      },
+      margincenter: theme.margincenter,
       image: {
           width: '100%',
           background: 'black',
@@ -85,7 +71,8 @@ function ProfileSetup(props) {
 
     const classes = useStyles();
 
-    const {uuid} = UserState();
+    const user = UserState();
+    const dispatch = useDispatch();
 
     const [toNext, settoNext] = useState(false);
 
@@ -128,64 +115,68 @@ function ProfileSetup(props) {
     }
 
     const handleInputChange = () => {
-        // if (setup.picIndex === -1) {
-            let reader = new FileReader();
-            reader.readAsDataURL(document.getElementById('pictures').files[0]);
-            reader.onload = (event) => {
-                if(event.target.readyState === FileReader.DONE) {
-                    let img = new Image();
-                    img.src = event.target.result;
-                    img.onload = () => {
-                        let avatarPic = document.getElementById('Avatar').getElementsByTagName('img')[0];
-                        avatarPic.src = img.src;
-                    };
+        if (typeof document.getElementById('pictures').files[0] == 'undefined')
+            return ;
+        let reader = new FileReader();
+        reader.readAsDataURL(document.getElementById('pictures').files[0]);
+        reader.onload = (event) => {
+            if(event.target.readyState === FileReader.DONE) {
+                let img = new Image();
+                img.src = event.target.result;
+                img.onload = () => {
+                    let avatarPic = document.getElementById('Avatar').getElementsByTagName('img')[0];
+                    avatarPic.src = img.src;
                 };
-            }
-            setSetup({...setup, pictures: [...document.getElementById('pictures').files], picIndex: 0});
-        // }
-        // else
-        //     setSetup({...setup, pictures: [...document.getElementById('pictures').files]});
+            };
+        }
+        setSetup({...setup, pictures: [...document.getElementById('pictures').files], picIndex: 0});
     }
 
     const Submit = (event) => {
-    event.preventDefault();
-    (async function sendData () {
-        try {
-            let formData = new FormData();
-            formData.append('gender', setup.gender);
-            formData.append('sexpref', setup.sexpref);
-            formData.append('bio', setup.bio);
-            formData.append('picIndex', setup.picIndex);
-            for (let i = 0; i < setup.tags.length; i++) {
-                formData.append('tags', setup.tags[i]);
+        event.preventDefault();
+            (async function sendData () {
+            try {
+                let formData = new FormData();
+
+                for (const key in object) {
+                    if (object.hasOwnProperty(key)) {
+                        const element = object[key];
+                        
+                    }
+                }
+                formData.append('gender', setup.gender);
+                formData.append('sexpref', setup.sexpref);
+                formData.append('bio', setup.bio);
+                formData.append('picIndex', setup.picIndex);
+                let pos = (await getPosition()).coords;
+                formData.append('position', pos.longitude);
+                formData.append('position', pos.latitude);
+                for (let i = 0; i < setup.tags.length; i++) {
+                    formData.append('tags', setup.tags[i]);
+                }
+                let pictures = document.getElementById('pictures');
+                for (const key in pictures.files) {
+                    if (pictures.files.hasOwnProperty(key)) {
+                        formData.append('pictures', pictures.files[key]);
+                    }
+                }
+                await axios.put(`/api/${conf.apiVer}/users/${user.uuid}`, formData);
+                ls.set('completed', true);
+                dispatch(saveUser({...user, completed: true}));
+                settoNext(true);
             }
-            let pictures = document.getElementById('pictures');
-            console.log(pictures.files);
-            for (const key in pictures.files) {
-                if (pictures.files.hasOwnProperty(key)) {
-                    formData.append('pictures', pictures.files[key]);
+            catch (e) {
+                console.log(e.response);
+                if (e.response.status === 415) {
+                    e.response.data.errors = {};
+                    e.response.data.errors.picturesError = e.response.data.error;
+                }
+                if (e.response.data.errors) {
+                    console.log(e.response.data.errors);
+                    setSetup({...setup, ...e.response.data.errors});
                 }
             }
-            console.log(formData);
-            await axios.put(`/api/${conf.apiVer}/users/${uuid}`, formData);
-            settoNext(true);
-        }
-        catch (e) {
-            console.log(e.response.data.errors);
-            if (e.response.data.errors) {
-            const errors = {
-                genderError: (e.response.data.errors.genderError ? e.response.data.errors.genderError : e.response.data.errors.gender),
-                sexprefError: (e.response.data.errors.sexprefError ? e.response.data.errors.sexprefError : e.response.data.errors.sexpref),
-                bioError: (e.response.data.errors.bioError ? e.response.data.errors.bioError : e.response.data.errors.bio),
-                tagsError: (e.response.data.errors.tagsError ? e.response.data.errors.tagsError : e.response.data.errors.tags),
-                picturesError: (e.response.data.errors.picturesError ? e.response.data.errors.picturesError : e.response.data.errors.pictures),
-            }
-            console.log(errors.tagsError);
-            setSetup({...setup, ...errors});
-            }
-        }
-    })()
-        // sendData();
+        })()
     }
 
     const changeAvatarPic = (event, img, startIndex) => {
@@ -262,13 +253,14 @@ function ProfileSetup(props) {
                     <Grid item xs={12}>
                             <div>
                                 <label className={classes.upload}>
-                                    Click to select your photos...{ setup.picturesError }
+                                    Click to select your photos...
                                     <input
                                         onChange={ handleInputChange }
                                         style={{ display: "none" }}
                                         id="pictures" type="file" name="pictures" multiple
                                     />
                                 </label>
+                                <p style={{color: 'red'}}>{ setup.picturesError }</p>
                             </div>
                     </Grid>
                     {setup.pictures.map( (file, index) => {

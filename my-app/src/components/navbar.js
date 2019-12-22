@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useHi } from 'react';
 import { useDispatch, useSelector, useEffect } from 'react-redux';
 import { makeStyles } from '@material-ui/core';
+import { green, grey, white } from '@material-ui/core/colors';
 import { saveUser } from '../reduxx/actions/save';
 import { Link } from 'react-router-dom';
 import { Collapse,  Navbar, NavbarToggler, NavbarBrand, Nav, NavItem, NavLink,
@@ -8,13 +9,17 @@ import { Collapse,  Navbar, NavbarToggler, NavbarBrand, Nav, NavItem, NavLink,
 import conf from '../config/config';
 import ls from 'local-storage';
 import axios from 'axios';
+import HomeIcon from './HomeIcon';
 
 const useStyles = makeStyles(theme => ({
     bold: {
         'font-weight': 'bold',
+        position: 'sticky',
+        top: '0px',
+        'z-index': 1,
     },
 }));
-function NavB() {
+function NavB(props) {
 
     const classes = useStyles();
     const [isOpen, setIsOpen] = useState(false);
@@ -36,6 +41,7 @@ function NavB() {
             ls.set('completed', false);
             ls.set('username', '');
             dispatch(saveUser({uuid: '', email: '', connected: false, completed: false, verified: false, username: ''}));
+            // props.history.push('login');
         }
         catch (err) {
             console.log(err);
@@ -64,7 +70,9 @@ function NavB() {
                     	<NavLink tag={Link} to={ '/users' }>Users</NavLink>
                     </NavItem>
 					{connected && <NavItem>
-                    	<NavLink tag={Link} to={ '/home' }><u>Home</u></NavLink>
+                    	<NavLink tag={Link} to={ '/home' }>
+                            <HomeIcon fontSize="small" style={{ color: grey[550] }} /> <u>Home</u>
+                        </NavLink>
                     </NavItem>}
                     <UncontrolledDropdown nav inNavbar>
                     <DropdownToggle nav caret>

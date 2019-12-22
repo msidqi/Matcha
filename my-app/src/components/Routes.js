@@ -13,14 +13,14 @@ import {
     Switch,
     Route,
   } from 'react-router-dom';
-import AccountSetup from './AccountSetup'; 
-import PrivateRoute from './PrivateRoute'; 
-import GuestRoute from './GuestRoute'; 
+import AccountSetup from './AccountSetup';
+import PrivateRoute from './PrivateRoute';
+import GuestRoute from './GuestRoute';
 import { makeStyles, Container, Grid } from '@material-ui/core';
 const useStyles = makeStyles(theme => ({
     pageContainer: {
       position: 'relative',
-      background: 'lightgreen',
+      // background: 'lightgreen',
       minHeight: '100vh',
     },
     body: {
@@ -46,7 +46,8 @@ export default function Routes() {
                     {/* <Route path="/profile" exact component={Profile} /> */}
                     {/* <Route path="/profile/edit" component={Register} /> */}
                     <Route path="/verification/:id/:token" exact component={VerifiedPage} />
-                    <Route path="/" component={Home} />
+                    <PrivateRoute path="/home" component={Home} />
+                    <PrivateRoute path="/" exact component={Home} />
                 </Switch>
             </div>
             <Footer />
