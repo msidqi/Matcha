@@ -31,8 +31,12 @@ const Theme = createMuiTheme({
 		background: 'white',
 		'border-radius': '5px',
 		overflow: 'auto',
-		'margin-top': '100px',
+		'margin': '100px auto',
+		// 'margin-bottom': '100px',
 		'box-shadow': '0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)',
+	},
+	heightAuto: {
+		height: 'auto',
 	},
 	paddingLeftRight: {
 		paddingLeft: '32px',

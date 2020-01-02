@@ -10,7 +10,7 @@ const loadImage = async (req, res, next) => {
         let imagePath = `${conf.imageFolderPath}${req.params.imageName}`;
         console.log(imagePath);
         if (!fs.existsSync(imagePath))
-            throw 'Image Not Found.';
+            throw {msg: 'Image Not Found.', code: 500};
         let readStream = fs.createReadStream(imagePath);
         readStream.on('data', (chunk) => {
             console.log('read a chunk.');
@@ -22,7 +22,7 @@ const loadImage = async (req, res, next) => {
     }
     catch (err) {
 		console.log(err);
-		next(handleError(404, err));
+		next(handleError(err.code, err.msg));
     }
 }
 

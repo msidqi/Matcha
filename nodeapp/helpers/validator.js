@@ -85,10 +85,12 @@ const months = {Jan: 1,	Feb: 2,	Mar: 3,	Apr: 4,	May: 5,	Jun: 6,	Jul: 7,	Aug: 8,	
 
 var monthDays = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 
-const calculateAge = (birthdate = []) => { //'30/12/2019' format
+const calculateAge = (birthdate) => { //'30/12/2019' format
 	let current = new Date().toString();
 	let age = -5;
 
+	if (typeof birthdate !== 'string')
+		throw 'traceback : calculateAge()'
 	birthdate = birthdate.split('/');
 	current = current.split(' ');
 	current = [current[2], months[current[1]], current[3]]
@@ -197,13 +199,16 @@ const validateTagsNOTSETUP = (tags = []) =>{
 }
 
 const validatePosition = (position) => {
+	let err = '';
+
 	console.log('position');
 	console.log(position);
 	if ((err = (position
-		&& typeof position[1] === 'number' && typeof position[0]  === 'number'
+		&& typeof position[0] === 'string' && typeof position[1]  === 'string'
 		&& position[0] >= -180 && position[0] <= 180 && position[1] >= -90
 		&& position[1] <= 90) ? "" : "Invalid position.") !== "")
 		return (err);
+	return (err);
 }
 
 const validateUser = function (user) {
@@ -242,9 +247,6 @@ const validateSetup = (user) =>{
 		errors.bioError = err;
 	if ((err = validateTags(user.tags)) !== "")
 		errors.tagsError = err;
-	console.log('----');
-	console.log(user.position);
-	console.log('----');
 	if ((err = validatePosition(user.position)) !== "")
 		errors.positionError = err;
 	// if ((err = validatePictures(user.pictures)) !== "") // valdiate image data and that file exists in path + pictureIndex(profilepic)
@@ -293,6 +295,9 @@ const fieldsExist = function (toVerify, fieldsRequired) {
 	for (const key in fieldsRequired) {
 		fieldsRequired[key] = toVerify[key];
 	}
+	// console.log('----');
+	// console.log(fieldsRequired);
+	// console.log('----');
 	for (let key in fieldsRequired) {
 		if (typeof fieldsRequired[key] === 'undefined' || fieldsRequired[key] === null || fieldsRequired[key].length === 0) {
 			errors[`${key}Error`] = `field required.`;

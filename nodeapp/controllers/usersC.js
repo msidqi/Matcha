@@ -1,6 +1,7 @@
 const validator = require('../helpers/validator');
 const usersM = require('../models/usersM');
 const tagsM = require('../models/tagsM');
+const sexprefM = require('../models/sexprefM');
 const bcrypt = require('bcryptjs');
 const uuid = require('uuid/v4');
 const auth = require('../middlewares/auth');
@@ -14,9 +15,10 @@ const userDefaultValues = (user) => {
     user.uuid = uuid();
     user.gender = '';
     user.score = 0.0;
-    user.sexualpreferences = '';
+    user.sexpref = '';
     user.bio = '';
 	user.pictures = [];
+	user.position = '';
     user.token = uuid() + uuid();
 	user.conToken = '';
 	user.verified = false;
@@ -26,7 +28,7 @@ const userDefaultValues = (user) => {
 const sendVerificationEmail = (email, username, uuid, token) => {
 	console.log('NOT sendVerificationEmail ----', email, username, uuid, token);
 	if (email === '' || !username || uuid === '' ||token === '')
-	throw 'Missing data: sending verification email.';
+		throw {msg: 'Missing data: sending verification email.', code: 400};
 	console.log('sendVerificationEmail ----');
 	const link = `<a target="_blank" href="${conf.viewUrl}/verification/${uuid}/${token}">here</a>`;
 	sendMail(email, 'Matcha Verification', `
@@ -39,6 +41,8 @@ const sendVerificationEmail = (email, username, uuid, token) => {
 //pahib56949@mail3tech.com
 //retikis685@imail5.net ///coalitions
 // liketov580@4qmail.com
+//figes40902@wmail2.net
+// vecoh66618@wmail1.com
 const createUser = async (req, res, next) => {
     try {
         let user = req.body;
@@ -67,15 +71,29 @@ const isVerifiedLoadUser = async (req, res, next) => {
 			if (req.dbuser.verified === true)
 				next();
 			else
-				throw 'Account not verified.';
+				throw {emailError: 'Account not verified.', code: 403};
 		}
-		else
+		else if (req.body.email !== "" && (req.dbuser = await usersM.loadBy('email', req.body.email)).completed === false)
+		{
+			if (req.dbuser.verified !== true)
+				throw {emailError: 'Account not verified.', code: 403};
 			next();
+		}
+		else {
+			if (req.body.email === "")
+				throw  {emailError: 'field required', code: 422}; // Unauthorized
+			else
+				throw {msg: 'User not logged in.', code: 401}; // Unauthorized
+		}
     }
     catch (err) {
 		console.log('HERE+ERR');
 		console.log(err);
-		next(handleError(422, err));
+		let code = (typeof err.code === 'number') ? err.code : 400;
+		if (typeof err.msg == 'string')
+			next(handleError(code, err.msg));
+		else
+			next(handleError(code, err));
     }
 }
 
@@ -95,47 +113,58 @@ const verifyUserEmail = async (req, res, next) => {
 	        res.status(201).json({msg: 'user verified.',  status: "OK"});
 		else {
 			if (user.token !== token)
-				throw new Error('Invalid token.');
+				throw {msg: 'Invalid token.', code: 401}; // Unauthorized
 			await usersM.updateVerify(uuid);
 			res.status(201).json({msg: 'user is now verified.', status: "OK"});
 		}
     }
     catch (err) {
-		next(handleError(422, err));
+		let code = (typeof err.code === 'number') ? err.code : 400;
+		if (typeof err.msg == 'string')
+			next(handleError(code, err.msg));
+		else
+			next(handleError(code, err));
     }
 }
 
 const loginUser = async (req, res, next) => {
 	try {
 		let user = req.body;
+		let dbuser = req.dbuser;
 		let err = "";
 
 		validator.fieldsExist(user, usersM.loginFields()); // check if user has the required keys to login
 		if (err = validator.email(user.email))					//	validate email
-			throw { emailError: err };
-		let userdb = await usersM.loadBy('email', user.email);	// load user by email if it exists, else throw err
-		if (user.password == "" || !user.password || !await bcrypt.compare(user.password, userdb.password))// || userdb.uuid !== req.params.id)
-			throw { passwordError: 'Incorrect password.'};
-		auth.createConnection(res, userdb.uuid, userdb.username, userdb.email);
-		console.log('logged in by server.', userdb);
-		res.status(200).json( { msg: 'user has logged in', uuid: userdb.uuid, verified: userdb.verified, completed: userdb.completed, username: userdb.username } );	// TODO: send JSON web token
+			throw { emailError: err , code: 422};
+		// let userdb = await usersM.loadBy('email', user.email);	// load user by email if it exists, else throw err
+		if (user.password == "" || !user.password || !await bcrypt.compare(user.password, dbuser.password))// || userdb.uuid !== req.params.id)
+			throw { passwordError: 'Incorrect password.', code: 422};
+		auth.createConnection(res, dbuser.uuid, dbuser.username, dbuser.email);
+		res.status(200).json( { msg: 'user has logged in', uuid: dbuser.uuid, verified: dbuser.verified, completed: dbuser.completed, username: dbuser.username } );	// TODO: send JSON web token
 	}
 	catch (err) {
-		next(handleError(422, err));
+		let code = (typeof err.code === 'number') ? err.code : 400;
+		if (typeof err.msg == 'string')
+			next(handleError(code, err.msg));
+		else
+			next(handleError(code, err));
 	}
 }
 
 const logoutUser = async (req, res, next) => {
-	try {
+	// try {
 		auth.deleteConnection(res);
 		console.log('loggetout by server.');
 		res.status(200).json({ msg: 'user has logged out.' });
-	}
-	catch (err) {
-		next(handleError(422, err));
-	}
+	// }
+	// catch (err) {
+	// 	next(handleError(400, err));
+	// }
 }
 
+/*
+MATCH (n:user) WHERE n.uuid = '456d694e-9749-41c0-98ff-e2702c3cd004' RETURN {username: n.username,uuid: n.uuid} AS n;
+*/
 const getUserById = async (req, res, next) => {
     try {
         let user = await usersM.loadById(req.params.id);
@@ -149,7 +178,7 @@ const getUserById = async (req, res, next) => {
         res.status(200).json(user);
     }
     catch (err) {
-        next(handleError(422, err));
+        next(handleError(500, err));
     }
 }
 
@@ -182,19 +211,23 @@ const editUser = async (req, res, next) => {
 		console.log('err111');
 		let updateable = usersM.updateableFields(); // take only user fields that are allowed to change
 		for (const key in updateable) {
-			if (updateable.hasOwnProperty(key) && req.body[key])
+			if (req.body[key])
 				userUpdate[key] = req.body[key];
 		}
-		// console.log(usersM.setupFields());
-		// console.log(`${process.cwd()}/uploads/${req.files[0].filename}`);
 		if(!user.completed) {
 			userUpdate.pictures = req.files;
 			validator.fieldsExist(userUpdate, usersM.setupFields());
 			validator.setup(userUpdate);
 			// if (validator.tags(userUpdate.tags))
+			userUpdate.longitude = parseInt(userUpdate.position[0]);
+			userUpdate.latitude = parseInt(userUpdate.position[1]);
+			console.log('userUpdate:--->', userUpdate);
 			userUpdate.pictures = userUpdate.pictures.map( picture => `${picture.filename}` );	// ${process.cwd()}/uploads/
 			userUpdate.completed = true;		// patch usersM with new data && set completed === true
+			await sexprefM.storeSexpref(user, userUpdate.sexpref);
 			await tagsM.storeTagsLike(user, userUpdate.tags);
+			delete userUpdate.position;
+			delete userUpdate.sexpref;
 			delete userUpdate.tags;
 		} else {
 			console.log('COMPLETED');

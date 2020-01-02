@@ -11,12 +11,13 @@ const storeUser = async (user) => {
 		birthdateShort:{birthdateShort},
 		score:{score},
 		gender:{gender},
-		sexualpreferences:{sexualpreferences},
+		sexpref:{sexpref},
 		bio:{bio},
 		pictures:{pictures},
 		uuid:{uuid},
 		token:{token},
 		conToken:{conToken},
+		verified:{verified},
 		completed: {completed}
 		}) RETURN n`;
 	const params = user;
@@ -52,8 +53,10 @@ const deleteJWT = async (uuid) => {
 }
 
 const loadUsersAll =  async () => {
-  let cypher = 'MATCH (n:user) RETURN n';
-  return await db.query(cypher);
+	// let fields = publicFields()
+	// let cypher = `MATCH (n:user) RETURN ${fields} as n`;
+	let cypher = `MATCH (n:user) RETURN n`;
+	return await db.query(cypher);
 }
 
 const updateVerify =  async (uuid) => {
@@ -67,16 +70,14 @@ const updateVerify =  async (uuid) => {
 const updateUser =  async (uuid, userUpdates) => {
 	let set = '';
 	let first = true;
-
+	let comma = ''
 	for (const key in userUpdates) {
-		if (userUpdates.hasOwnProperty(key)) {
-			if (first) {
-				set += `n.${key} = {${key}} `;
-				first = false;
-			}
-			else
-				set += `, n.${key} = {${key}} `;
-		}
+		if (key === 'position')
+			set += `${comma} n.position = point({ x: {longitude}, y: {latitude}, z: 0, crs: 'wgs-84-3d' }) `;
+		else
+			set += `${comma} n.${key} = {${key}} `;
+		if (!comma)
+			comma = ', ';
 	}
 	let cypher = `MATCH (n:user {uuid: {uuid}}) SET ${set} RETURN n`;
 	let params = {uuid: uuid, ...userUpdates};
@@ -177,6 +178,22 @@ const updateableFields = () => { // updateableFieldsSetup
 	};
 }
 
+const publicFields = () => { // updateableFieldsSetup
+	return {
+		username: null,
+		firstname: null,
+		lastname: null,
+		birthdateShort: null,
+		gender: null,
+		position: null,
+		sexpref: null,
+		tags: null,
+		bio: null,
+		pictures: null,
+		picIndex: null,
+	};
+}
+
 module.exports = {
   loadAll:			loadUsersAll,
   storeUser:		storeUser,
@@ -191,4 +208,5 @@ module.exports = {
   updateVerify:		updateVerify,
   update:			updateUser,
   updateableFields:	updateableFields,
+  publicFields:		publicFields,
 };

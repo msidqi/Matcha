@@ -8,26 +8,27 @@ import UserState from '../components/UserState';
 const useStyles = makeStyles(theme => ({
     card: theme.card,
     paddingLeftRight: theme.paddingLeftRight,
-    // banner: {
-    //     background: '#ef4a25',
-    //     height: '10px',
-    // },
     continue: {
         margin: theme.spacing(3, 0, 2),
-        // justifyContent: 'center',
         textAlign:  'center',
       },
     button: {
         // height: '100%',
         width: '100%',
         color: 'white',
-        background: "#3f51b5",
+        background: "#171225",
         borderRadius: '20px',
         '&:hover': {
-            background: "#5e6cb5",
+            background: "#ef4a25",
         },
     },
+    heightAuto: theme.heightAuto,
     info: theme.info,
+    message: {
+        paddingTop: '50px',
+        // padding: '50px',
+        minHeight: '300px',
+    },
     banner: theme.banner,
 }));
 
@@ -70,9 +71,9 @@ function VerifiedPage(props) {
         {toNext && <Redirect to="/login"/>}
         <Grid item xs={12} className={classes.banner}>
         </Grid>
-            <Grid container spacing={0} className={`${classes.paddingLeftRight} ${classes.info}`}>
+            <Grid container spacing={0} className={`${classes.paddingLeftRight} ${classes.info} ${classes.heightAuto}`}>
                 {Verified && 
-                <Grid item xs={12} className={classes.info}>
+                <Grid item xs={12} className={classes.message}>
                     <h4>You account is now verified!</h4>
                     <h6>please fill in few additional informations about what yourself so we can customize the experience to your liking.</h6>
                 </Grid>

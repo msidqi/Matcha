@@ -14,7 +14,8 @@ const useStyles = makeStyles(theme => ({
     [theme.breakpoints.down('sm')]: {
       position: 'static',
       minHeight: '100px',
-      maxWidth: '100%',
+      minWidth: '100%',
+      // background: 'blue'
     },
     minHeight: '200px',
     // width: '200px',

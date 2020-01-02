@@ -10,7 +10,13 @@ const createConnection = (res, uuid, username, email) => {
 
 	payload = {uuid: uuid, username: username, email: email}
 	options = { algorithm: 'RS256' };
-	private_key= fs.readFileSync(__dirname + '/keys.pem').toString();
+	try {
+		private_key = fs.readFileSync(__dirname + '/keys.pem').toString();
+	}
+	catch (err)
+	{
+		throw {msg: 'missing env vars', code: 500};
+	}
 	conToken = jwt.sign(payload, private_key, options);
 	res.cookie('conToken', conToken, { httpOnly: true }); // expires: new Date(Date.now() + 5000000), 
 }
@@ -25,7 +31,14 @@ const verifyConnection = (conToken) => {
 	let options;
 
 	options = { algorithms: ['RS256'] };
-	public_key = fs.readFileSync(__dirname + '/keys.pem.pub').toString();
+	try {
+		public_key = fs.readFileSync(__dirname + '/keys.pem.pub').toString();
+	}
+	catch (err)
+	{
+		throw {msg: 'missing env vars', code: 500};
+	}
+
 	try {
 		if (ret = jwt.verify(conToken, public_key, options))
 			return (ret);

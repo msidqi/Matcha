@@ -32,7 +32,7 @@ const useStyles = makeStyles(theme => ({
     margincenter: theme.margincenter,
 }));
 
-export default function ProfileShort({uuid, ...rest}) {
+export default function Matches({uuid, ...rest}) {
 
   // const {uuid, connected,} = UserState();
   const classes = useStyles();

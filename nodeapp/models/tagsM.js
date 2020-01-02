@@ -33,7 +33,7 @@ const deleteTagLike = async (user, tags = []) => {
     }
     cypher += ` WHERE n.uuid = {uuid} ${cypher2} DELETE ${todelete}`;
     let result = await db.query(cypher, params);
-    return ({ msg: `user not longer interested in ${tags}.` });
+    return ({ msg: `user no longer interested in ${tags}.` });
 }
 
 module.exports = {

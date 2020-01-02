@@ -61,7 +61,7 @@ function Login() {
                           username: result.data.username}));
         }
         catch (e) {
-          console.log(e);
+          console.log(e.response.data);
           if (e.response && e.response.data.errors) {
             const errors = {
               emailError: e.response.data.errors.emailError,
@@ -69,6 +69,8 @@ function Login() {
             };
             handleChange(errors);
           }
+          else if (e.response && e.response.data.error)
+            console.log(e.response.data.error);
         }
       })();
     }
@@ -80,7 +82,7 @@ function Login() {
         <Grid item xs={12} className={classes.banner}>
         </Grid>
           <form  onSubmit={ loginUser } autoComplete="off" noValidate>
-            <Grid container spacing={0} className={`${classes.paddingLeftRight} ${classes.info}`}>
+            <Grid container spacing={0} className={`${classes.paddingLeftRight} ${classes.info} ${classes.heightAuto}`}>
                   <Grid item xs={12}>
                       <UserInput
                       label={ 'email' }

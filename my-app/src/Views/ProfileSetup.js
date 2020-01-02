@@ -38,6 +38,7 @@ const useStyles = makeStyles(theme => ({
     },
     info: theme.info,
     card: theme.card,
+    heightAuto: theme.heightAuto,
     paddingLeftRight: theme.paddingLeftRight,
     banner: theme.banner,
     fields: {
@@ -137,13 +138,6 @@ function ProfileSetup(props) {
             (async function sendData () {
             try {
                 let formData = new FormData();
-
-                for (const key in object) {
-                    if (object.hasOwnProperty(key)) {
-                        const element = object[key];
-                        
-                    }
-                }
                 formData.append('gender', setup.gender);
                 formData.append('sexpref', setup.sexpref);
                 formData.append('bio', setup.bio);
@@ -168,12 +162,19 @@ function ProfileSetup(props) {
             catch (e) {
                 console.log(e.response);
                 if (e.response.status === 415) {
-                    e.response.data.errors = {};
+                    if (!e.response.data.errors)
+                        e.response.data.errors = {};
                     e.response.data.errors.picturesError = e.response.data.error;
                 }
                 if (e.response.data.errors) {
-                    console.log(e.response.data.errors);
-                    setSetup({...setup, ...e.response.data.errors});
+                    // console.log(e.response.data.errors);
+                    let errors;// = e.response.data.errors;
+                    for (const key in setup) {
+                        if (key !== 'picIndex' && errors[`${key}Error`])
+                            errors[`${key}Error`] = e.response.data.errors[`${key}Error`]
+                    }
+                    console.log(errors);
+                    setSetup({...setup, ...errors});
                 }
             }
         })()
@@ -192,7 +193,7 @@ function ProfileSetup(props) {
         <Container className={ classes.card } maxWidth='sm'>
             <Grid item xs={12} className={classes.banner}>
             </Grid>
-            <Grid container spacing={0} className={`${classes.paddingLeftRight} ${classes.info}`}>
+            <Grid container spacing={0} className={`${classes.paddingLeftRight} ${classes.info} ${classes.heightAuto}`}>
                     <Grid item xs={12} >
                         <Avatar className={classes.margincenter} id="Avatar" alt="Profile pic" src="https://ssl.gstatic.com/images/branding/product/1x/avatar_square_blue_512dp.png" />
                         {/* <Avatar id="Avatar" className={classes.margincenter} variant="rounded">{username.toUpperCase()[0]}</Avatar> */}

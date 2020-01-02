@@ -12,6 +12,7 @@ const useStyles = makeStyles(theme => ({
   card: theme.card,
   paddingLeftRight: theme.paddingLeftRight,
   info: theme.info,
+  heightAuto: theme.heightAuto,
   banner: theme.banner,
 }));
 
@@ -87,7 +88,7 @@ function Register() {
         <Grid item xs={12} className={classes.banner}>
         </Grid>
           <form  onSubmit={ registerUser } autoComplete="off" noValidate>
-            <Grid container spacing={0} className={`${classes.paddingLeftRight} ${classes.info}`}>
+            <Grid container spacing={0} className={`${classes.paddingLeftRight} ${classes.info} ${classes.heightAuto}`}>
                   <Grid item xs={12}>
                     <UserInput
                       label={ 'username' }
