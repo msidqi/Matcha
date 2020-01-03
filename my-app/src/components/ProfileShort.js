@@ -23,6 +23,7 @@ const useStyles = makeStyles(theme => ({
     maxWidth: '200px',
     // minWidth: '150px',
   },
+  wordBreak: theme.wordBreak,
   margincenter: theme.margincenter,
 }));
 
@@ -36,25 +37,24 @@ export default function ProfileShort({uuid, ...rest}) {
   useEffect( () => { 
     const CancelToken = axios.CancelToken;
     let cancel;
-    const getUserData = async () => {
+    (async function getUserData() {
       try {
         let res = await axios.get(`/api/${conf.apiVer}/users/${uuid}`, { cancelToken: new CancelToken(function executor(c) {
           // An executor function receives a cancel function as a parameter
           cancel = c;
         }) });
         setDbuser(res.data);
-        console.log(res.data)
+        console.log(res.data);
       }
       catch (err) {
-        console.log(err)
+        console.log(err);
       }
-    }
-    getUserData();
+    })();
     return (cancel);
   }, []);
 
   return (
-    <div className={ classes.content }>
+    <div className={ `${classes.content} ${classes.wordBreak}` }>
               <Grid container spacing={0}>
                 <Grid item xs={12}>
                     <Avatar className={classes.margincenter} id="Avatar" alt="Profile pic" src={(Object.keys(dbuser).length > 0 && dbuser.pictures[dbuser.picIndex]) ? `${conf.apiImages}/${dbuser.pictures[dbuser.picIndex]}` : "https://ssl.gstatic.com/images/branding/product/1x/avatar_square_blue_512dp.png"}/>
@@ -69,9 +69,9 @@ export default function ProfileShort({uuid, ...rest}) {
                   <Typography color="textSecondary" variant="body2">
                     {dbuser.bio}
                   </Typography>
+                  <Divider variant="middle" />
                 </Grid>
                 <Grid item xs={12} >
-                  <Divider variant="middle" />
                 </Grid>
               </Grid>
             </div>

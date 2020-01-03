@@ -156,7 +156,7 @@ const validateSexpref = (sexualpreference) => {
 		return (err);
 	if ((err = (sexualpreference.length !== 0) ? "" : "Please choose your sexual preference.") !== "")
 		return (err);
-	if ((err = /^Heterosexual$|^Homosexual$|^Bisexual$/.test(sexualpreference) ? "" : "Choose your orientation.") !== "")
+	if ((err = /^Males$|^Females$|^Both$/.test(sexualpreference) ? "" : "Choose your preference.") !== "")
 		return (err);
 	return err
 }

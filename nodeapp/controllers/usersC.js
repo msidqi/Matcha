@@ -43,6 +43,7 @@ const sendVerificationEmail = (email, username, uuid, token) => {
 // liketov580@4qmail.com
 //figes40902@wmail2.net
 // vecoh66618@wmail1.com
+// wopos35016@email-9.com female
 const createUser = async (req, res, next) => {
     try {
         let user = req.body;

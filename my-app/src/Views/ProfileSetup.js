@@ -161,20 +161,23 @@ function ProfileSetup(props) {
             }
             catch (e) {
                 console.log(e.response);
-                if (e.response.status === 415) {
-                    if (!e.response.data.errors)
-                        e.response.data.errors = {};
-                    e.response.data.errors.picturesError = e.response.data.error;
-                }
                 if (e.response.data.errors) {
-                    // console.log(e.response.data.errors);
-                    let errors;// = e.response.data.errors;
+                    let errors = {};
+                    if (e.response.status === 415)
+                        e.response.data.errors.picturesError = e.response.data.error;
                     for (const key in setup) {
-                        if (key !== 'picIndex' && errors[`${key}Error`])
-                            errors[`${key}Error`] = e.response.data.errors[`${key}Error`]
+                        if (key !== 'picIndex' && e.response.data.errors[`${key}Error`])
+                            errors[`${key}Error`] = e.response.data.errors[`${key}Error`];
                     }
-                    console.log(errors);
                     setSetup({...setup, ...errors});
+                }
+                else
+                {
+                    let errors = {};
+                    for (const key in setup) {
+                        errors[`${key}Error`] = '';
+                        setSetup({...setup, ...errors});
+                    }
                 }
             }
         })()
@@ -213,9 +216,9 @@ function ProfileSetup(props) {
                     </Grid>
                     <Grid item xs={12} >
                         <ItemsMenu
-                        itemName={ 'Sexual orientation ' }
+                        itemName={ 'Preference' }
                         name={ 'sexpref' }
-                        items={ ['Heterosexual', 'Homosexual', 'Bisexual'] }
+                        items={ ['Males', 'Females', 'Both'] }
                         val={ setup.sexpref }
                         func={ handleEventChange }
                         helperText={ setup.sexprefError }

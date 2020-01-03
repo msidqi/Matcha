@@ -42,6 +42,9 @@ const Theme = createMuiTheme({
 		paddingLeft: '32px',
 		paddingRight: '32px',
 	},
+	wordBreak: {
+		'word-wrap': 'break-word'
+	}
    });
 
 const styles = theme => ({
