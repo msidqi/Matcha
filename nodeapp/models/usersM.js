@@ -52,11 +52,15 @@ const deleteJWT = async (uuid) => {
    return(true);
 }
 
-const loadUsersAll =  async () => {
+const loadUsersAll =  async (uuid) => {
 	// let fields = publicFields()
-	// let cypher = `MATCH (n:user) RETURN ${fields} as n`;
-	let cypher = `MATCH (n:user) RETURN n`;
-	return await db.query(cypher);
+	let cypher = `MATCH (sx2:sexpref)<-[r3:SEXPREF]-(m:user)-[r2:INTERESTED_IN]->(t:tag)<-[r1:INTERESTED_IN]-(n:user {uuid: {uuid}})-[r0:SEXPREF]->(sx1:sexpref)
+	WHERE m.gender = sx1.type AND sx2.type = n.gender AND m.uuid <> n.uuid
+	WITH {user:m, numOfTags: COUNT(DISTINCT t)} AS n
+	RETURN DISTINCT n ORDER BY n.numOfTags DESC, n.user.score DESC`;
+	// let cypher = `MATCH (n:user) RETURN n`;
+	let params = {uuid: uuid};
+	return await db.query(cypher, params);
 }
 
 const updateVerify =  async (uuid) => {

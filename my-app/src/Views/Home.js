@@ -36,7 +36,7 @@ const useStyles = makeStyles(theme => ({
       minHeight: '100px',
       maxWidth: '100%',
     },
-    // display: 'inline-block',
+      // display: 'inline-block',
     // display: 'inline',
     // width: '50%',
     // height: '100px'

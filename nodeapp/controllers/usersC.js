@@ -44,6 +44,7 @@ const sendVerificationEmail = (email, username, uuid, token) => {
 //figes40902@wmail2.net
 // vecoh66618@wmail1.com
 // wopos35016@email-9.com female
+// jahov10630@fxmail.ws jahov10630@fxmail.ws1
 const createUser = async (req, res, next) => {
     try {
         let user = req.body;
@@ -131,13 +132,13 @@ const verifyUserEmail = async (req, res, next) => {
 const loginUser = async (req, res, next) => {
 	try {
 		let user = req.body;
-		let dbuser = req.dbuser;
+		// let dbuser = req.dbuser;
 		let err = "";
 
 		validator.fieldsExist(user, usersM.loginFields()); // check if user has the required keys to login
 		if (err = validator.email(user.email))					//	validate email
 			throw { emailError: err , code: 422};
-		// let userdb = await usersM.loadBy('email', user.email);	// load user by email if it exists, else throw err
+		let dbuser = await usersM.loadBy('email', user.email);	// load user by email if it exists, else throw err
 		if (user.password == "" || !user.password || !await bcrypt.compare(user.password, dbuser.password))// || userdb.uuid !== req.params.id)
 			throw { passwordError: 'Incorrect password.', code: 422};
 		auth.createConnection(res, dbuser.uuid, dbuser.username, dbuser.email);
@@ -185,10 +186,10 @@ const getUserById = async (req, res, next) => {
 
 const getUsersAll = async (req, res, next) => {
 	try {
-		let result = await usersM.loadAll();
+		let result = await usersM.loadAll(req.dbuser.uuid);
 		var arr = [];
 		result.records.forEach(record => {
-			let user = record.get('n').properties;
+			let user = record.get('n').user.properties;
 		  	delete user.conToken;	// delete secret fields
 		  	delete user.token;
 		  	delete user.password;

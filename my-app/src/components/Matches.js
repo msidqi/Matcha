@@ -14,6 +14,7 @@ const useStyles = makeStyles(theme => ({
             minHeight: '100px',
             maxWidth: '100%',
         },
+        width: '100%',
         // height: '100%',
         // width: '200px',
         // overflow: 'auto',
@@ -61,19 +62,19 @@ export default function Matches({uuid, ...rest}) {
 
   return (
     <div className={ classes.content }>
-        <Grid container 
+        <Grid container
         spacing={2}
         justify="center"
         alignItems="flex-start"
         >
-            { fetchedUsers.map( (user, index) => {
+            {fetchedUsers.map((user, index) => {
 
                 return (
                     <Grid item xs={12} sm={6} lg={4} xl={3} key={`${index}-${user.username}`} className={ classes.cardContainer }>
                         <UserCard user={user} />
                     </Grid>
                 )
-            } ) }
+            })}
         </Grid>
     </div>
   );

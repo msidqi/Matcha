@@ -11,7 +11,7 @@ const tagsM = require('./models/tagsM');
 
 const upload = require('./helpers/multer');
 
-Router.get('/users/', baseline, usersC.getAll);
+Router.get('/users/', baseline, auth.middleware, usersC.isVerifiedLoad, usersC.getAll);
 
 // Router.get('/users/', baseline, usersC.getAll); // query males | females | both | limits=3/page |
 
@@ -23,7 +23,7 @@ Router.put('/users/:id', baseline, auth.middleware, usersC.isVerifiedLoad, uploa
 
 Router.patch('/users/:id/location', baseline, auth.middleware, usersC.isVerifiedLoad, usersC.isCompleted, usersC.locationRefresh);
 
-Router.post('/session/', baseline, usersC.isVerifiedLoad, usersC.login);
+Router.post('/session/', baseline, /*usersC.isVerifiedLoad,*/ usersC.login);
 
 Router.get('/images/:imageName', baseline, auth.middleware, usersC.isVerifiedLoad, imageC.load);
 

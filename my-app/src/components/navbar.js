@@ -61,7 +61,7 @@ function NavB(props) {
     return (
       <>
         <div className={ classes.bold }>
-            <Navbar dark expand="md" className={'card-2'} onClick={ refresh }>
+            <Navbar dark expand="sm" className={'card-2'} onClick={ refresh }>
                 <NavbarBrand tag={Link}  to={"/"}>Matcha</NavbarBrand>
                 <NavbarToggler onClick={toggle} />
                 <Collapse isOpen={isOpen} navbar>
