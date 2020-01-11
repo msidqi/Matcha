@@ -27,3 +27,11 @@ module.exports = {
     errorMiddleware:    errorMiddleware,
     handleError:        handleError,
 }
+
+/*
+res.sendStatus() method that will set the HTTP status code,
+and will send a string representation of the status code in the body.
+This could be useful for 404s or 500s, where you don’t want to send
+additional detail to the client, and just want a default string
+representation of the status code to be sent.
+*/

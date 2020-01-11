@@ -5,15 +5,29 @@ const conf = require('./config/config');
 
 const imageC = require('./controllers/imageC');
 const usersC = require('./controllers/usersC');
+const matchesC = require('./controllers/matchesC');
+const blockedC = require('./controllers/blockedC');
 const auth = require('./middlewares/auth');
 const baseline = require('./helpers/resetValues');
 const tagsM = require('./models/tagsM');
-
 const upload = require('./helpers/multer');
 
-Router.get('/users/', baseline, auth.middleware, usersC.isVerifiedLoad, usersC.getAll);
+
+Router.get('/users/matches', baseline, auth.middleware, usersC.isVerifiedLoad, usersC.getAll);
+
+Router.post('/users/matches', baseline, auth.middleware, usersC.isVerifiedLoad, matchesC.match);
+
+Router.delete('/users/matches', baseline, auth.middleware, usersC.isVerifiedLoad, matchesC.unmatch);
+
+Router.get('/users/blocked', baseline, auth.middleware, usersC.isVerifiedLoad, usersC.getAll);
+
+Router.post('/users/blocked', baseline, auth.middleware, usersC.isVerifiedLoad, blockedC.block);
+
+Router.delete('/users/blocked', baseline, auth.middleware, usersC.isVerifiedLoad, blockedC.unblock);
 
 // Router.get('/users/', baseline, usersC.getAll); // query males | females | both | limits=3/page |
+
+Router.get('/users/', baseline, auth.middleware, usersC.isVerifiedLoad, usersC.getAll); // for admin
 
 Router.get('/users/:id', baseline, auth.middleware, usersC.getById);
 
