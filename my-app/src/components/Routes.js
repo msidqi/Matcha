@@ -16,7 +16,7 @@ import {
 import AccountSetup from './AccountSetup';
 import PrivateRoute from './PrivateRoute';
 import GuestRoute from './GuestRoute';
-import { makeStyles, Container, Grid } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core';
 const useStyles = makeStyles(theme => ({
     pageContainer: {
       position: 'relative',

@@ -45,6 +45,7 @@ const sendVerificationEmail = (email, username, uuid, token) => {
 // vecoh66618@wmail1.com
 // wopos35016@email-9.com female
 // jahov10630@fxmail.ws jahov10630@fxmail.ws1
+// edris.luigi@oovy.org edris.luigi@oovy.org1
 const createUser = async (req, res, next) => {
     try {
         let user = req.body;
@@ -189,6 +190,7 @@ const getUsersAll = async (req, res, next) => {
 		let result = await usersM.loadAll(req.dbuser.uuid);
 		var arr = [];
 		result.records.forEach(record => {
+			console.log("forEach");
 			let user = record.get('n').user.properties;
 		  	delete user.conToken;	// delete secret fields
 		  	delete user.token;
@@ -221,14 +223,17 @@ const editUser = async (req, res, next) => {
 			validator.fieldsExist(userUpdate, usersM.setupFields());
 			validator.setup(userUpdate);
 			// if (validator.tags(userUpdate.tags))
-			userUpdate.longitude = parseInt(userUpdate.position[0]);
-			userUpdate.latitude = parseInt(userUpdate.position[1]);
+			// userUpdate.longitude = parseInt(userUpdate.position[0]);
+			// userUpdate.latitude = parseInt(userUpdate.position[1]);
+			userUpdate.position[0] = parseInt(userUpdate.position[0]);
+			userUpdate.position[1] = parseInt(userUpdate.position[1]);
+			userUpdate.position
 			console.log('userUpdate:--->', userUpdate);
 			userUpdate.pictures = userUpdate.pictures.map( picture => `${picture.filename}` );	// ${process.cwd()}/uploads/
 			userUpdate.completed = true;		// patch usersM with new data && set completed === true
 			await sexprefM.storeSexpref(user, userUpdate.sexpref);
 			await tagsM.storeTagsLike(user, userUpdate.tags);
-			delete userUpdate.position;
+			// delete userUpdate.position;
 			delete userUpdate.sexpref;
 			delete userUpdate.tags;
 		} else {
@@ -254,8 +259,8 @@ const editUser = async (req, res, next) => {
 
 const distanceBetweenTwoUsers = () => {
 	const cypher = `WITH
-	point({ x: {longitude-0}, y: {latitude-0}, z: {altitude-0}, crs: 'wgs-84-3d' }) AS p1,7
-	point({ x: {longitude-1}, y: {latitude-1}, z: {altitude-1}, crs: 'wgs-84-3d' }) AS p2
+	point({ x: {longitude0}, y: {latitude0}, 0, crs: 'wgs-84-3d' }) AS p1,7
+	point({ x: {longitude1}, y: {latitude1}, 0, crs: 'wgs-84-3d' }) AS p2
 	RETURN distance(p1,p2) AS dist`
 }
 

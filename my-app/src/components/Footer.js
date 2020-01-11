@@ -1,7 +1,5 @@
 import React from 'react';
-import ProfileShort from '../components/ProfileShort';
-import { makeStyles, Container, Grid } from '@material-ui/core';
-import UserState from '../components/UserState';
+import { makeStyles } from '@material-ui/core';
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -20,7 +18,6 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export default function Footer() {
-  const {uuid, connected,} = UserState();
   const classes = useStyles();
 
   return (

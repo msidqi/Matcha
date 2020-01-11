@@ -53,12 +53,10 @@ const deleteJWT = async (uuid) => {
 }
 
 const loadUsersAll =  async (uuid) => {
-	// let fields = publicFields()
 	let cypher = `MATCH (sx2:sexpref)<-[r3:SEXPREF]-(m:user)-[r2:INTERESTED_IN]->(t:tag)<-[r1:INTERESTED_IN]-(n:user {uuid: {uuid}})-[r0:SEXPREF]->(sx1:sexpref)
-	WHERE m.gender = sx1.type AND sx2.type = n.gender AND m.uuid <> n.uuid
+	WHERE m.gender = sx1.type AND sx2.type = n.gender AND m.uuid <> n.uuid AND NOT (n)-[:BLOCKS]-(m)
 	WITH {user:m, numOfTags: COUNT(DISTINCT t)} AS n
 	RETURN DISTINCT n ORDER BY n.numOfTags DESC, n.user.score DESC`;
-	// let cypher = `MATCH (n:user) RETURN n`;
 	let params = {uuid: uuid};
 	return await db.query(cypher, params);
 }
@@ -85,7 +83,10 @@ const updateUser =  async (uuid, userUpdates) => {
 	}
 	let cypher = `MATCH (n:user {uuid: {uuid}}) SET ${set} RETURN n`;
 	let params = {uuid: uuid, ...userUpdates};
-
+	if (typeof userUpdates.position !== 'undefined') {
+		params.longitude = userUpdates.position[0];
+		params.latitude = userUpdates.position[1];
+	}
 	let result = await db.query(cypher, params);
 	console.log(result.records[0].get('n').properties);
 }

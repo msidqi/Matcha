@@ -3,6 +3,7 @@ const db = require ('../helpers/db');
 const storeSexpref = async (user, sexpref = '') => {
     let cypher = '';
     let params = '';
+
     if (sexpref === 'Both')
     {
         cypher =

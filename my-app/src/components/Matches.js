@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import conf from '../config/config';
-import UserState from './UserState';
 import UserCard from './UserCard';
-import { makeStyles, Grid, Avatar, Divider, Typography } from '@material-ui/core';
+import { makeStyles, Grid } from '@material-ui/core';
 
 const useStyles = makeStyles(theme => ({
     content: {

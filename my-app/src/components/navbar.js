@@ -1,7 +1,7 @@
-import React, { useState, useHi } from 'react';
-import { useDispatch, useSelector, useEffect } from 'react-redux';
+import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { makeStyles } from '@material-ui/core';
-import { green, grey, white } from '@material-ui/core/colors';
+import { grey } from '@material-ui/core/colors';
 import { saveUser } from '../reduxx/actions/save';
 import { Link } from 'react-router-dom';
 import { Collapse,  Navbar, NavbarToggler, NavbarBrand, Nav, NavItem, NavLink,
