@@ -117,12 +117,17 @@ const userExists = async (uuid, username, email) => { // by uuid or username && 
 }
 
 const loadUserById = async (uuid) => {
-	let cypher = `MATCH (n:user) WHERE n.uuid = {uuid} RETURN n`;
+	let cypher = `MATCH (m:user) WHERE m.uuid = {uuid}
+	WITH {username: m.username, firstname: m.firstname, lastname: m.lastname,
+	score: m.score, uuid: m.uuid, birthdateShort: m.birthdateShort,
+	gender: m.gender, completed: m.completed, verified: m.verified, picIndex: m.picIndex, pictures: m.pictures,
+	latitude: m.latitude, longitude: m.longitude, bio: m.bio} as n
+	RETURN n`
     let params = {uuid: uuid};
 	let result = await db.query(cypher, params);
     if (result.records.length === 0)
       throw new Error('No user with that Id.');
-    return (result.records[0].get('n').properties);
+    return (result.records[0].get('n'));
 }
 
 const loadUserBy = async (key, val) => {

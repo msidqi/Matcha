@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import Card from '@material-ui/core/Card';
@@ -14,6 +14,7 @@ import ShareIcon from '@material-ui/icons/Share';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import conf from '../config/config';
 import RatingH from './RatingH';
+import axios from 'axios';
 
 const useStyles = makeStyles(theme => ({
   card: {
@@ -42,11 +43,33 @@ const useStyles = makeStyles(theme => ({
 export default function UserCard({ user: user, ...rest}) {
   const classes = useStyles();
   const [expanded, setExpanded] = React.useState(false);
+  const [matched, setMatched] = useState('');
 
   const handleExpandClick = () => {
     setExpanded(!expanded);
   };
-  console.log('user: ', user)
+
+  const matcheUser = async (event) => {
+    try {
+      console.log(event.target);
+      let body = {uuid: event.target.name};
+
+      if (matched === '') {
+        setMatched('secondary');
+        await axios.post(`/api/${conf.apiVer}/users/matches`, body);
+      } else if (matched === 'secondary') {
+        setMatched('');
+        await axios.delete(`/api/${conf.apiVer}/users/matches`, body);
+      }
+    }
+    catch (err) {
+
+    }
+  }
+
+
+
+  console.log('user: ', user.uuid)
   return (
     <Card className={classes.card} name={user.uuid}>
       <CardMedia
@@ -56,16 +79,21 @@ export default function UserCard({ user: user, ...rest}) {
       />
       <CardContent>
         <Typography variant="body2" color="textPrimary" component="p">
-          { `${user.username}, ${user.age}`  }
+          { `${user.username}, ${user.age}` }
         </Typography>
         <RatingH
-        score={user.score}
-        name="score"
-        key={user.username} />
+          score={user.score}
+          name="score"
+          key={user.username}
+        />
       </CardContent>
       <CardActions disableSpacing>
-        <IconButton aria-label="add to favorites">
-          <FavoriteIcon />
+        <IconButton aria-label="add to favorites"
+        onClick={matcheUser}
+        name={user.uuid}
+        >
+          <FavoriteIcon 
+          color={matched}/>
         </IconButton>
         <IconButton aria-label="share">
           <ShareIcon />

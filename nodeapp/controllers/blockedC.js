@@ -1,3 +1,4 @@
+const validator = require('../helpers/validator');
 const blockedM = require('../models/blockedM');
 const { handleError } = require('../helpers/errorHandler');
 
@@ -27,7 +28,24 @@ const unblockUser = async (req, res, next) => {
   }
 }
 
+const getBlockedAll = async (req, res, next) => {
+  try {
+      let ret = await blockedM.loadBlocked(req.dbuser.uuid);
+        ret = ret.map((user) => {
+        user = user.get('ret')
+        user.age = validator.calculateAge(user.birthdateShort);
+        return (user);
+      });
+    res.status(202).json(ret);
+  }
+  catch (err) {
+    console.log(err);
+    next(handleError(err.code, err.msg));
+  }
+}
+
 module.exports = {
-	block:     		blockUser,
-	unblock:      unblockUser,
+	block:      blockUser,
+  unblock:    unblockUser,
+  getAll:     getBlockedAll
 }

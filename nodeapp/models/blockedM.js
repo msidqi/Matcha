@@ -21,9 +21,23 @@ const deleteBlock = async (user, m_uuid) => {
     return ({msg: result.summary.counters._stats.relationshipsDeleted ? `user no longer blocks ${m_uuid}.` : `user can't block ${m_uuid}.`});
 }
 
+const loadBlocked = async (uuid) => {
+    let cypher = `MATCH (n:user)-[r:BLOCKS]->(m:user)
+    WHERE n.uuid = {uuid}
+    WITH {username: m.username, firstname: m.firstname, lastname: m.lastname,
+    score: m.score, uuid: m.uuid, birthdateShort: m.birthdateShort,
+    gender: m.gender, completed: m.completed, verified: m.verified, picIndex: m.picIndex, pictures: m.pictures,
+    latitude: m.latitude, longitude: m.longitude} as ret
+    RETURN ret`;
+    let params = {uuid: uuid};
+    let result = await db.query(cypher, params);
+    return (result.records);
+}
+
 module.exports = {
     storeBlock:     storeBlock,
     deleteBlock:    deleteBlock,
+    loadBlocked:    loadBlocked,
 }
 //test new account, check if position is stored correctly
 

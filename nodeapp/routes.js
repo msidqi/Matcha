@@ -13,13 +13,13 @@ const tagsM = require('./models/tagsM');
 const upload = require('./helpers/multer');
 
 
-Router.get('/users/matches', baseline, auth.middleware, usersC.isVerifiedLoad, usersC.getAll);
+Router.get('/users/suggestions', baseline, auth.middleware, usersC.isVerifiedLoad, usersC.getAll);
 
 Router.post('/users/matches', baseline, auth.middleware, usersC.isVerifiedLoad, matchesC.match);
 
 Router.delete('/users/matches', baseline, auth.middleware, usersC.isVerifiedLoad, matchesC.unmatch);
 
-Router.get('/users/blocked', baseline, auth.middleware, usersC.isVerifiedLoad, usersC.getAll);
+Router.get('/users/blocked', baseline, auth.middleware, usersC.isVerifiedLoad, blockedC.getAll);
 
 Router.post('/users/blocked', baseline, auth.middleware, usersC.isVerifiedLoad, blockedC.block);
 

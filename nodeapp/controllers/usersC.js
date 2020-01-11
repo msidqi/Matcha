@@ -181,7 +181,7 @@ const getUserById = async (req, res, next) => {
         res.status(200).json(user);
     }
     catch (err) {
-        next(handleError(500, err));
+        next(handleError(422, 'No user with that Id'));
     }
 }
 
@@ -190,22 +190,21 @@ const getUsersAll = async (req, res, next) => {
 		let result = await usersM.loadAll(req.dbuser.uuid);
 		var arr = [];
 		result.records.forEach(record => {
-			console.log("forEach");
 			let user = record.get('n').user.properties;
 		  	delete user.conToken;	// delete secret fields
 		  	delete user.token;
 		  	delete user.password;
 			delete user.email;
 			user.age = validator.calculateAge(user.birthdateShort);
-			// user.pictures = (await Promise.all(user.pictures.map(picPath => loadImageBufferPromise(picPath)))).map( picBuffer => `data:image/png;base64,${picBuffer.toString('base64')}` );
-		  	arr.push(user);
+			arr.push(user);
 		});
 		res.status(200).json(arr);
-	  }
-	  catch (err) {
+	}
+	catch (err) {
 		next(handleError(501, err));
-	  }
+	}
 }
+// user.pictures = (await Promise.all(user.pictures.map(picPath => loadImageBufferPromise(picPath)))).map( picBuffer => `data:image/png;base64,${picBuffer.toString('base64')}` );
 
 const editUser = async (req, res, next) => {
 	try {
