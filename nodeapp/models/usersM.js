@@ -55,7 +55,9 @@ const deleteJWT = async (uuid) => {
 const loadUsersAll =  async (uuid) => {
 	let cypher = `MATCH (sx2:sexpref)<-[r3:SEXPREF]-(m:user)-[r2:INTERESTED_IN]->(t:tag)<-[r1:INTERESTED_IN]-(n:user {uuid: {uuid}})-[r0:SEXPREF]->(sx1:sexpref)
 	WHERE m.gender = sx1.type AND sx2.type = n.gender AND m.uuid <> n.uuid AND NOT (n)-[:BLOCKS]-(m)
-	WITH {user:m, numOfTags: COUNT(DISTINCT t)} AS n
+	OPTIONAL MATCH (n)-[r4:HEARTS]->(m)
+	OPTIONAL MATCH (n)<-[r5:HEARTS]-(m)
+	WITH {user:m, numOfTags: COUNT(DISTINCT t), hearted: r4, heartedBack: r5} AS n
 	RETURN DISTINCT n ORDER BY n.numOfTags DESC, n.user.score DESC`;
 	let params = {uuid: uuid};
 	return await db.query(cypher, params);

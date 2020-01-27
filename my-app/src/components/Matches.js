@@ -44,7 +44,7 @@ export default function Matches({uuid, ...rest}) {
     let cancel;
     const fetchUsers = async () => {
       try {
-        let res = await axios.get(`/api/${conf.apiVer}/users/`, { cancelToken: new CancelToken(function executor(c) {
+        let res = await axios.get(`/api/${conf.apiVer}/users/suggestions/`, { cancelToken: new CancelToken(function executor(c) {
           // An executor function receives a cancel function as a parameter
           cancel = c;
         }) });

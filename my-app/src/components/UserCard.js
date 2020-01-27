@@ -40,26 +40,25 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export default function UserCard({ user: user, ...rest}) {
+export default function UserCard({ user: user, ...rest }) {
   const classes = useStyles();
   const [expanded, setExpanded] = React.useState(false);
-  const [matched, setMatched] = useState('');
+  const [matched, setMatched] = useState(user.hearted ? 'secondary' : 'action');
 
   const handleExpandClick = () => {
     setExpanded(!expanded);
   };
 
-  const matcheUser = async (event) => {
+  const matcheUser = async (uuid) => {
     try {
-      console.log(event.target);
-      let body = {uuid: event.target.name};
+      let body = { uuid: uuid };
 
-      if (matched === '') {
-        setMatched('secondary');
+      if (matched === 'action') {
         await axios.post(`/api/${conf.apiVer}/users/matches`, body);
+        setMatched('secondary');
       } else if (matched === 'secondary') {
-        setMatched('');
-        await axios.delete(`/api/${conf.apiVer}/users/matches`, body);
+        await axios.delete(`/api/${conf.apiVer}/users/matches`, { data: body });
+        setMatched('action');
       }
     }
     catch (err) {
@@ -74,12 +73,12 @@ export default function UserCard({ user: user, ...rest}) {
     <Card className={classes.card} name={user.uuid}>
       <CardMedia
         className={classes.media}
-        image={ user.pictures[user.picIndex] ? `${conf.apiImages}/${user.pictures[user.picIndex]}` : "https://icon-library.net/images/placeholder-image-icon/placeholder-image-icon-14.jpg" }
+        image={user.pictures[user.picIndex] ? `${conf.apiImages}/${user.pictures[user.picIndex]}` : "https://icon-library.net/images/placeholder-image-icon/placeholder-image-icon-14.jpg"}
         title="Paella dish"
       />
       <CardContent>
         <Typography variant="body2" color="textPrimary" component="p">
-          { `${user.username}, ${user.age}` }
+          {`${user.username}, ${user.age}`}
         </Typography>
         <RatingH
           score={user.score}
@@ -89,15 +88,18 @@ export default function UserCard({ user: user, ...rest}) {
       </CardContent>
       <CardActions disableSpacing>
         <IconButton aria-label="add to favorites"
-        onClick={matcheUser}
         name={user.uuid}
+        onClick={() => { matcheUser(user.uuid) }}
         >
-          <FavoriteIcon 
-          color={matched}/>
+        <FavoriteIcon
+        color={matched}
+        />
         </IconButton>
+
         <IconButton aria-label="share">
           <ShareIcon />
         </IconButton>
+
         <IconButton
           className={clsx(classes.expand, {
             [classes.expandOpen]: expanded,
@@ -112,7 +114,7 @@ export default function UserCard({ user: user, ...rest}) {
       <Collapse in={expanded} timeout="auto" unmountOnExit>
         <CardContent>bio:
           <Typography paragraph>
-          {user.bio ? user.bio : `Heat oil in a (14- to 16-inch) paella pan or a large, deep skillet over medium-high
+            {user.bio ? user.bio : `Heat oil in a (14- to 16-inch) paella pan or a large, deep skillet over medium-high
             heat. Add chicken, shrimp and chorizo, and cook, stirring occasionally until lightly
             browned, 6 to 8 minutes. Transfer shrimp to a large plate and set aside, leaving chicken
             and chorizo in the pan. Add pimentón, bay leaves, garlic, tomatoes, onion, salt and

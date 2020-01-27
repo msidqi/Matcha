@@ -190,12 +190,15 @@ const getUsersAll = async (req, res, next) => {
 		let result = await usersM.loadAll(req.dbuser.uuid);
 		var arr = [];
 		result.records.forEach(record => {
-			let user = record.get('n').user.properties;
+			let n = record.get('n');
+			let user = n.user.properties;
 		  	delete user.conToken;	// delete secret fields
 		  	delete user.token;
 		  	delete user.password;
 			delete user.email;
 			user.age = validator.calculateAge(user.birthdateShort);
+			user.hearted = n.hearted ? true : false;
+			user.matched = (n.heartedBack && n.hearted) ? true : false;
 			arr.push(user);
 		});
 		res.status(200).json(arr);
