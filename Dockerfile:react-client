@@ -1,6 +1,6 @@
 FROM ubuntu:latest
 
-WORKDIR app/
+WORKDIR app/my-app
 
 RUN apt-get update && apt-get upgrade -y && apt-get -y install software-properties-common \
                                                             curl wget npm vim dirmngr \
@@ -8,20 +8,20 @@ RUN apt-get update && apt-get upgrade -y && apt-get -y install software-properti
                                                             ca-certificates
 RUN curl -sL https://deb.nodesource.com/setup_11.x | bash -
 
-RUN apt-get update && apt-get install -y nodejs \
-			&& npm install -g nodemon \
-		    && npm install react-router-dom \
-			redux \
-			react-redux \
-			@material-ui/core \
-			@material-ui/pickers \
-			@date-io/date-fns \
-			date-fns@next \
-			reactstrap bootstrap \
-			react-cookie \
-			axios --save
+# RUN apt-get update && apt-get install -y nodejs \
+# 			&& npm install -g nodemon \
+# 		    && npm install react-router-dom \
+# 			redux \
+# 			react-redux \
+# 			@material-ui/core \
+# 			@material-ui/pickers \
+# 			@date-io/date-fns \
+# 			date-fns@next \
+# 			reactstrap bootstrap \
+# 			react-cookie \
+# 			axios --save
 			
-			
+CMD npm i && npm start
 			
 			
 			

@@ -9,7 +9,7 @@ services:
         ports:
             - 3001:3001
         working_dir: /app/nodeapp
-        command: nodemon app.js
+        # command: nodemon app.js
         volumes:
             - .:/app
         links:
@@ -23,7 +23,7 @@ services:
             dockerfile: Dockerfile:react-client
         container_name: "react"
         working_dir: /app/my-app
-        command: npm start
+        # command: npm start
         ports:
             - 80:80
             - 443:443

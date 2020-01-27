@@ -1,6 +1,6 @@
 FROM ubuntu:latest
 #CHANGED
-WORKDIR app/
+WORKDIR app/nodeapp
 
 RUN apt-get update && apt-get upgrade -y && apt-get -y install software-properties-common \
                                                             curl wget npm vim dirmngr \
@@ -8,13 +8,16 @@ RUN apt-get update && apt-get upgrade -y && apt-get -y install software-properti
                                                             ca-certificates 
 RUN curl -sL https://deb.nodesource.com/setup_11.x | bash -
 
-RUN apt-get update && apt-get install -y nodejs \
-			&& npm install -g nodemon \
-			&& npm install  neo4j-driver \
-                            express \
-                            bcryptjs \
-                            uuid \
-                            cors --save
+# RUN apt-get update && apt-get install -y nodejs \
+# 			&& npm install -g nodemon \
+# 			&& npm install  neo4j-driver \
+#                             express \
+#                             bcryptjs \
+#                             uuid \
+#                             cors --save
+
+CMD npm i && npm start
+
 ## Start server
 #CMD nodemon -L --use_strict nodeapp/app.js > logs/nodejs.log 2>&1
 #pm2 start --watch . --name=my-process app.js
