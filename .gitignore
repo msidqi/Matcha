@@ -4,4 +4,6 @@
 *.png
 *.jpeg
 .env
+*env
+.env*
 neostore*
