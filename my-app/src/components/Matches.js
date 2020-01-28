@@ -70,7 +70,7 @@ export default function Matches({uuid, ...rest}) {
 
                 return (
                     <Grid item xs={12} sm={6} lg={4} xl={3} key={`${index}-${user.username}`} className={ classes.cardContainer }>
-                        <UserCard user={user} />
+                        <UserCard user={user} style={{margin: '500px'}}/>
                     </Grid>
                 )
             })}

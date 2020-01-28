@@ -52,12 +52,18 @@ const deleteJWT = async (uuid) => {
    return(true);
 }
 
+const distanceBetweenTwoUsers = () => {
+	const cypher = `WITH
+	point({ x: {longitude0}, y: {latitude0}, z: 0.0, crs: 'wgs-84-3d' }) AS p1,
+	point({ x: {longitude1}, y: {latitude1}, z: 0.0, crs: 'wgs-84-3d' }) AS p2
+	RETURN distance(p1,p2) AS dist`
+}
 const loadUsersAll =  async (uuid) => {
 	let cypher = `MATCH (sx2:sexpref)<-[r3:SEXPREF]-(m:user)-[r2:INTERESTED_IN]->(t:tag)<-[r1:INTERESTED_IN]-(n:user {uuid: {uuid}})-[r0:SEXPREF]->(sx1:sexpref)
 	WHERE m.gender = sx1.type AND sx2.type = n.gender AND m.uuid <> n.uuid AND NOT (n)-[:BLOCKS]-(m)
 	OPTIONAL MATCH (n)-[r4:HEARTS]->(m)
 	OPTIONAL MATCH (n)<-[r5:HEARTS]-(m)
-	WITH {user:m, numOfTags: COUNT(DISTINCT t), hearted: r4, heartedBack: r5} AS n
+	WITH {user:m, numOfTags: COUNT(DISTINCT t), hearted: r4, heartedBack: r5, distance: distance(m.position, n.position)} AS n
 	RETURN DISTINCT n ORDER BY n.numOfTags DESC, n.user.score DESC`;
 	let params = {uuid: uuid};
 	return await db.query(cypher, params);
@@ -77,7 +83,7 @@ const updateUser =  async (uuid, userUpdates) => {
 	let comma = ''
 	for (const key in userUpdates) {
 		if (key === 'position')
-			set += `${comma} n.position = point({ x: {longitude}, y: {latitude}, z: 0, crs: 'wgs-84-3d' }) `;
+			set += `${comma} n.position = point({ x: {longitude}, y: {latitude}, z: 0.0, crs: 'wgs-84-3d' }) `;
 		else
 			set += `${comma} n.${key} = {${key}} `;
 		if (!comma)

@@ -44,7 +44,7 @@ export default function UserCard({ user: user, ...rest }) {
   const classes = useStyles();
   const [expanded, setExpanded] = React.useState(false);
   const [matched, setMatched] = useState(user.hearted ? 'secondary' : 'action');
-
+//"action","disabled","error","inherit","primary","secondary"
   const handleExpandClick = () => {
     setExpanded(!expanded);
   };
@@ -80,10 +80,10 @@ export default function UserCard({ user: user, ...rest }) {
         <Typography variant="body2" color="textPrimary" component="p">
           {`${user.username}, ${user.age}`}
         </Typography>
+          {`${parseInt(user.distance)} m away.`}
         <RatingH
           score={user.score}
           name="score"
-          key={user.username}
         />
       </CardContent>
       <CardActions disableSpacing>
@@ -92,6 +92,7 @@ export default function UserCard({ user: user, ...rest }) {
         onClick={() => { matcheUser(user.uuid) }}
         >
         <FavoriteIcon
+        fontSize={user.matched ? 'large' : 'default'}
         color={matched}
         />
         </IconButton>

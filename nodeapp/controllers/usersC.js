@@ -196,6 +196,7 @@ const getUsersAll = async (req, res, next) => {
 		  	delete user.token;
 		  	delete user.password;
 			delete user.email;
+			user.distance = n.distance;
 			user.age = validator.calculateAge(user.birthdateShort);
 			user.hearted = n.hearted ? true : false;
 			user.matched = (n.heartedBack && n.hearted) ? true : false;
@@ -261,8 +262,8 @@ const editUser = async (req, res, next) => {
 
 const distanceBetweenTwoUsers = () => {
 	const cypher = `WITH
-	point({ x: {longitude0}, y: {latitude0}, 0, crs: 'wgs-84-3d' }) AS p1,7
-	point({ x: {longitude1}, y: {latitude1}, 0, crs: 'wgs-84-3d' }) AS p2
+	point({ x: {longitude0}, y: {latitude0}, z: 0.0, crs: 'wgs-84-3d' }) AS p1,
+	point({ x: {longitude1}, y: {latitude1}, z: 0.0, crs: 'wgs-84-3d' }) AS p2
 	RETURN distance(p1,p2) AS dist`
 }
 

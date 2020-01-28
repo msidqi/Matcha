@@ -8,25 +8,21 @@ import Box from '@material-ui/core/Box';
 
 const StyledRating = withStyles({
   iconFilled: {
-    color: '#ff6d75',
+    color: '#ff3d47',
   },
   iconHover: {
-    color: '#ff3d47',
+    color: '#ff6d75',
   },
 })(Rating);
 
-function getLabelText(value) {
-  return `${value} Heart${value !== 1 ? 's' : ''}`;
-}
-
 export default function RatingH(props) {
+  console.log('props.score', props.score)
   return (
       <Box component="fieldset" mb={3} borderColor="transparent">
         {props.label ? <Typography component="legend">{props.label}</Typography> : ''}
         <StyledRating
-          name={props.name}
+          readOnly
           value={props.score}
-          getLabelText={getLabelText}
           precision={1}
           size="small"
           icon={<FavoriteIcon fontSize="inherit" />}
