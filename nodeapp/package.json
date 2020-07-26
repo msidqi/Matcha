@@ -19,6 +19,7 @@
     "neode": "^0.3.6",
     "nodemailer": "^6.3.1",
     "nodemon": "^1.19.4",
+    "socket.io": "^2.3.0",
     "uuid": "^3.3.3"
   },
   "devDependencies": {},

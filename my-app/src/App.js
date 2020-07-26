@@ -1,9 +1,10 @@
 import './App.css';
-import React from 'react';
+import React, { useEffect } from 'react';
 import Routes from './components/Routes';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import 'typeface-roboto';
 import { withStyles, MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
+import socketIOClient from "socket.io-client";
 
 const Theme = createMuiTheme({
 	typography: {
@@ -53,10 +54,21 @@ const styles = theme => ({
 	},
 });
 
-  
-function App() {
 
-  return (
+let socket;
+function App() {
+	useEffect(() => {
+		socket = socketIOClient('/');
+		socket.on('connect', function () { console.log('connect'); });
+		socket.on('news', function (data) { console.log('news'); });
+		socket.on('disconnect', function () { console.log('disconnect'); });
+	}, [socket]);
+
+	const sendEmit = () => {
+		socket.emit('clie', { my: 'data' });
+	}
+  
+	return (
     	<>
 		<CssBaseline />
 		<MuiThemeProvider theme={Theme}>

@@ -50,7 +50,7 @@ function Home() {
   return (
     <>
       {user.connected && user.verified && !user.completed && <Redirect to="/setup"/>}
-      {user.connected && user.verified && user.completed && <Redirect to="/login"/>}
+      {/* {user.connected && user.verified && user.completed && <Redirect to="/login"/>} */}
       <Container className={ classes.container }  maxWidth='xl'>
         <Grid container spacing={0}>
           <Grid item xs={12} md={3} className={ classes.leftcontainer }>

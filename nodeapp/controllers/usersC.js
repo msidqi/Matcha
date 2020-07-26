@@ -46,6 +46,7 @@ const sendVerificationEmail = (email, username, uuid, token) => {
 // wopos35016@email-9.com female
 // jahov10630@fxmail.ws jahov10630@fxmail.ws1
 // edris.luigi@oovy.org edris.luigi@oovy.org1
+//petare3923@promail9.net
 const createUser = async (req, res, next) => {
     try {
         let user = req.body;
@@ -199,6 +200,7 @@ const getUsersAll = async (req, res, next) => {
 			user.distance = n.distance;
 			user.age = validator.calculateAge(user.birthdateShort);
 			user.hearted = n.hearted ? true : false;
+			user.heartedBack = n.heartedBack ? true : false;
 			user.matched = (n.heartedBack && n.hearted) ? true : false;
 			arr.push(user);
 		});

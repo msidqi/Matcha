@@ -16,7 +16,6 @@ const StyledRating = withStyles({
 })(Rating);
 
 export default function RatingH(props) {
-  console.log('props.score', props.score)
   return (
       <Box component="fieldset" mb={3} borderColor="transparent">
         {props.label ? <Typography component="legend">{props.label}</Typography> : ''}

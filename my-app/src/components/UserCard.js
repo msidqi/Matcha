@@ -9,9 +9,10 @@ import Collapse from '@material-ui/core/Collapse';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import { red } from '@material-ui/core/colors';
+import ChatRoundedIcon from '@material-ui/icons/ChatRounded';
 import FavoriteIcon from '@material-ui/icons/Favorite';
-import ShareIcon from '@material-ui/icons/Share';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import AccountBoxRoundedIcon from '@material-ui/icons/AccountBoxRounded';
 import conf from '../config/config';
 import RatingH from './RatingH';
 import axios from 'axios';
@@ -43,8 +44,10 @@ const useStyles = makeStyles(theme => ({
 export default function UserCard({ user: user, ...rest }) {
   const classes = useStyles();
   const [expanded, setExpanded] = React.useState(false);
-  const [matched, setMatched] = useState(user.hearted ? 'secondary' : 'action');
-//"action","disabled","error","inherit","primary","secondary"
+  const [data, setData] = useState({isHearted: user.hearted ? true : false, isMatched: user.matched ? true : false});
+  // const [isHearted, setIsHearted] = useState(user.hearted ? true : false);
+  // const [isMatched, setIsMatched] = useState(user.matched ? true : false);
+
   const handleExpandClick = () => {
     setExpanded(!expanded);
   };
@@ -52,21 +55,20 @@ export default function UserCard({ user: user, ...rest }) {
   const matcheUser = async (uuid) => {
     try {
       let body = { uuid: uuid };
+      let toSend = (data.isHearted) ? { data: body } : body;
 
-      if (matched === 'action') {
-        await axios.post(`/api/${conf.apiVer}/users/matches`, body);
-        setMatched('secondary');
-      } else if (matched === 'secondary') {
-        await axios.delete(`/api/${conf.apiVer}/users/matches`, { data: body });
-        setMatched('action');
+      if (!data.isHearted) {
+        await axios.post(`/api/${conf.apiVer}/users/matches`, toSend);
+        setData({isHearted: true, isMatched: user.heartedBack ? true : false});
+      } else if (data.isHearted) {
+        await axios.delete(`/api/${conf.apiVer}/users/matches`, toSend);
+        setData({isHearted: false, isMatched: false});
       }
     }
     catch (err) {
-
+      console.log(err)
     }
   }
-
-
 
   console.log('user: ', user.uuid)
   return (
@@ -91,16 +93,20 @@ export default function UserCard({ user: user, ...rest }) {
         name={user.uuid}
         onClick={() => { matcheUser(user.uuid) }}
         >
-        <FavoriteIcon
-        fontSize={user.matched ? 'large' : 'default'}
-        color={matched}
+          <FavoriteIcon
+          color={data.isHearted ? 'secondary' : 'action'}
         />
         </IconButton>
 
         <IconButton aria-label="share">
-          <ShareIcon />
+          <AccountBoxRoundedIcon />
         </IconButton>
 
+          <IconButton aria-label="share"
+            disabled={(data.isMatched && data.isHearted) ? false : true}
+          >
+            <ChatRoundedIcon />
+          </IconButton>
         <IconButton
           className={clsx(classes.expand, {
             [classes.expandOpen]: expanded,

@@ -43,7 +43,7 @@ function Login() {
       await (async function sendData() {
         try {
           let position = await getPosition();
-          // console.log(position);
+          console.log(position);
           let result = await axios.post(`/api/${conf.apiVer}/session/`, Login);
           // console.log(result.data.completed);
           ls.set('connected', true);
